@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<package>
+  <metadata>
+    <id>EPiServer.Telemetry.UI</id>
+    <version>$version$</version>
+    <title>EPiServer.Telemetry.UI</title>
+    <authors>EPiServer AB</authors>
+    <owners>EPiServer</owners>
+    <iconUrl>http://www.episerver.com/Framework/Styles/Images/Products/Content.png</iconUrl>
+    <projectUrl>http://www.episerver.com/web-content-management/</projectUrl>
+    <licenseUrl>http://www.episerver.com/eula/</licenseUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <description>Episerver temetry package</description>
+    <copyright>Copyright 2020</copyright>
+    <tags>telemetry</tags>
+    <dependencies>
+      <dependency id="EPiServer.CMS.Core" version="[11.10.0,12.0)" />
+      <dependency id="EPiServer.CMS.UI.Core" version="[11.11.0,12.0)" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="bin\EPiServer.Telemetry.UI.dll" target="lib\net45\" />
+    <file src="modules\_protected\episerver-telemetry-ui\episerver-telemetry-ui.zip" target="content\modules\_protected\episerver-telemetry-ui\" />
+    <file src="modules\_protected\episerver-telemetry-ui\web.config" target="content\modules\_protected\episerver-telemetry-ui\" />
+    <file src="web.config.transform" target="content" />
+  </files>
+</package>
