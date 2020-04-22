@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>Alloy.Sample.Telemetry.UI</id>
+    <version>$version$</version>
+    <authors>EPiServer AB</authors>
+    <owners>EPiServer AB</owners>
+    <projectUrl>http://www.episerver.com/</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Alloy Sample with Telemetry</description>
+    <releaseNotes />
+  </metadata>
+  <files>
+    <file src="build\database\DefaultSiteContent.episerverdata" target="wwwroot\App_Data\DefaultSiteContent.episerverdata"/>
+    <file src="build\database\*.cs" target="wwwroot\App_Code\" />
+    <file src="build\packaging\transforms\*.transform" target="setup"/>
+    <file src="build\packaging\*.sql" target="setup"/>
+    <file src="packages\episerver.cms.core.*\tools\EPiServer.Cms.Core.sql" target="setup\sql"/>
+    <file src="src\Episerver.Telemetry.UI\bin\$configuration$\EPiServer.Telemetry.UI.*" target="wwwroot\bin" />
+    <file src="src\Alloy\bin\*.*" target="wwwroot\bin" exclude="src\Alloy\bin\EPiServer.Telemetry.UI.*"/>
+    <file src="src\Alloy\ClientResources\**\*.*" target="wwwroot\ClientResources" />
+    <file src="src\Alloy\Resources\**\*.*" target="wwwroot\Resources" />
+    <file src="src\Alloy\Static\**\*.*" target="wwwroot\Static" />
+    <file src="src\Alloy\Views\**\*.*" target="wwwroot\Views" />
+    <file src="src\Alloy\modules\**\*.*" target="wwwroot\modules" exclude="src\Alloy\modules\_protected\episerver-telemetry-ui\1.0.0\**\*.*;src\Alloy\modules\_protected\episerver-telemetry-ui\module.config" />
+    <file src="src\Alloy\*.config" target="wwwroot" exclude="license.config"/>
+    <file src="src\Alloy\*.asax" target="wwwroot"/>
+    <file src="src\Alloy\*.ico" target="wwwroot"/>
+  </files>
+</package>
