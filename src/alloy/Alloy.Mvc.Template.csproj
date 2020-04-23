@@ -416,6 +416,7 @@
     <Content Include="App_Readme\Elmah.txt" />
     <Content Include="ClientResources\Images\icons\layoutIcons24x24.png" />
     <Content Include="ClientResources\Scripts\Editors\StringList.js" />
+    <Content Include="ClientResources\Scripts\initializer.js" />
     <Content Include="ClientResources\Styles\LayoutIcons.css" />
     <Content Include="EpiserverLog.config" />
     <Content Include="favicon.ico" />
