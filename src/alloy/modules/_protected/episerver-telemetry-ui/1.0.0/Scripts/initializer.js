@@ -5,7 +5,8 @@ define([
     "epi/shell/store/JsonRest",
     "epi/_Module",
     "episerver-telemetry-ui/tracker",
-    "episerver-telemetry-ui/get-custom-properties"
+    "episerver-telemetry-ui/get-custom-properties",
+    "episerver-telemetry-ui/track-edit-mode"
 ], function (
     declare,
     dependency,
@@ -13,7 +14,8 @@ define([
     JsonRest,
     _Module,
     tracker,
-    getCustomProperties
+    getCustomProperties,
+    trackEditMode
 ) {
     return declare([_Module], {
         initialize: function () {
@@ -36,6 +38,8 @@ define([
                         tracker.track("feature-options", options);
                     }
                 });
+
+            trackEditMode();
         }
     });
 });
