@@ -13,7 +13,7 @@ define([
     routes,
     JsonRest,
     _Module,
-    tracker,
+    trackerFactory,
     getCustomProperties,
     trackEditMode
 ) {
@@ -34,7 +34,9 @@ define([
                 .get().then(function (telemetry) {
                     // Prevent errors when initializing tracker without the instrumentationKey
                     if (telemetry.configuration && telemetry.configuration.instrumentationKey) {
-                        tracker.initialize(telemetry.configuration, getCustomProperties(telemetry), telemetry.user, telemetry.client);
+                        trackerFactory.initialize(telemetry.configuration, getCustomProperties(telemetry), telemetry.user, telemetry.client);
+                        
+                        var tracker = trackerFactory.getTracker("cms");
                         tracker.track("feature-options", options);
                     }
                 });

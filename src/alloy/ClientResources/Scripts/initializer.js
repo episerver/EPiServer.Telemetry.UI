@@ -7,11 +7,13 @@ define([
     declare,
     PublishCommand,
     _Module,
-    tracker
+    trackerFactory
 ) {
     return declare([_Module], {
         initialize: function () {
             var originalExecute = PublishCommand.prototype.execute;
+            var tracker = trackerFactory.getTracker("cms");
+            
             PublishCommand.prototype.execute = function () {
                 tracker.track("publish-test", {
                     "test": true

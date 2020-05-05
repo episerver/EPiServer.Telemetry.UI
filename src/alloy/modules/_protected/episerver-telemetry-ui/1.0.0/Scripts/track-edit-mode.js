@@ -13,13 +13,14 @@ define([
     ContentModelServerSync,
     PageDataController,
     idleTimer,
-    Tracker
+    trackerFactory
 ) {
     return function () {
         var viewName = "";
 
         var heartbeatInterval = 60;
         var heartbeatTimeoutId;
+        var tracker = trackerFactory.getTracker("cms");
 
         patchContentModelServerSync();
 
@@ -83,7 +84,7 @@ define([
 
         function trackHeartbeat(commandType) {
             if (idleTimer.isActive() && viewName) {
-                Tracker.track("editing", {
+                tracker.track("editing", {
                     editMode: viewName,
                     commandType: commandType || "heartbeat"
                 });
@@ -94,7 +95,7 @@ define([
         }
 
         function trackContentSaved() {
-            Tracker.track("editContentSaved", {
+            tracker.track("editContentSaved", {
                 editMode: viewName
             });
         }
