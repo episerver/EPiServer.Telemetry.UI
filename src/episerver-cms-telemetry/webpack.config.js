@@ -5,9 +5,9 @@ module.exports = () => {
         {
             devtool: "source-map",
             mode: "production",
-            entry: "./src/tracker.js",
+            entry: "./src/tracker-factory.js",
             output: {
-                filename: "tracker.js",
+                filename: "tracker-factory.js",
                 libraryTarget: "amd",
                 libraryExport: "default",
                 path: path.resolve(__dirname, "./../alloy/modules/_protected/episerver-telemetry-ui/1.0.0/Scripts")
@@ -31,9 +31,9 @@ module.exports = () => {
         {
             devtool: "inline-source-map",
             mode: "development",
-            entry: "./src/tracker.js",
+            entry: "./src/tracker-factory.js",
             output: {
-                filename: "tracker.js.uncompressed.js",
+                filename: "tracker-factory.js.uncompressed.js",
                 libraryTarget: "amd",
                 libraryExport: "default",
                 path: path.resolve(__dirname, "./../alloy/modules/_protected/episerver-telemetry-ui/1.0.0/Scripts")

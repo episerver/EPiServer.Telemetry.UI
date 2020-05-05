@@ -5,7 +5,7 @@ define([
     "epi-cms/contentediting/ContentModelServerSync",
     "epi-cms/contentediting/PageDataController",
     "episerver-telemetry-ui/idle-timer",
-    "episerver-telemetry-ui/tracker"
+    "episerver-telemetry-ui/tracker-factory"
 ], function (
     topic,
     when,

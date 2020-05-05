@@ -4,7 +4,7 @@ define([
     "epi/routes",
     "epi/shell/store/JsonRest",
     "epi/_Module",
-    "episerver-telemetry-ui/tracker",
+    "episerver-telemetry-ui/tracker-factory",
     "episerver-telemetry-ui/get-custom-properties",
     "episerver-telemetry-ui/track-edit-mode"
 ], function (

@@ -2,7 +2,7 @@ define([
     "dojo/_base/declare",
     "epi-cms/contentediting/command/Publish",
     "epi/_Module",
-    "episerver-telemetry-ui/tracker"
+    "episerver-telemetry-ui/tracker-factory"
 ], function (
     declare,
     PublishCommand,

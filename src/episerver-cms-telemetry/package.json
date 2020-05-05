@@ -1,7 +1,7 @@
 {
     "name": "episerver-cms-telemetry",
     "version": "0.1.0",
-    "main": "tracker.js",
+    "main": "tracker-factory.js",
     "license": "Apache-2.0",
     "private": true,
     "dependencies": {
