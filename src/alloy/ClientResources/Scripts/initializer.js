@@ -13,10 +13,10 @@ define([
         initialize: function () {
             var originalExecute = PublishCommand.prototype.execute;
             var tracker = trackerFactory.getTracker("cms");
-            
+
             PublishCommand.prototype.execute = function () {
                 tracker.track("publish-test", {
-                    "test": true
+                    test: true
                 });
 
                 return originalExecute.apply(this, arguments);

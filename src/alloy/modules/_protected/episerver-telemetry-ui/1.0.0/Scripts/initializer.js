@@ -35,7 +35,7 @@ define([
                     // Prevent errors when initializing tracker without the instrumentationKey
                     if (telemetry.configuration && telemetry.configuration.instrumentationKey) {
                         trackerFactory.initialize(telemetry.configuration, getCustomProperties(telemetry), telemetry.user, telemetry.client);
-                        
+
                         var tracker = trackerFactory.getTracker("cms");
                         tracker.track("featureOptions", options);
                     }

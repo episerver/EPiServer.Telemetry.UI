@@ -51,7 +51,7 @@ define([
             var originalIFrameLoaded = PageDataController.prototype._iFrameLoaded;
             PageDataController.prototype._iFrameLoaded = function () {
                 originalIFrameLoaded.apply(this, arguments);
-                bindIframeEvents()
+                bindIframeEvents();
             };
             PageDataController.prototype._iFrameLoaded.nom = "_iFrameLoaded";
         }
@@ -99,5 +99,5 @@ define([
                 editMode: viewName
             });
         }
-    }
+    };
 });

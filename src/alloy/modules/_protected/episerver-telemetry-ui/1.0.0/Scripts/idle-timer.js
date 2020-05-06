@@ -7,10 +7,10 @@ define([
     var idleTimeout = 120; // 2 minutes
 
     var events = [
-        'mousemove',
-        'mousedown',
-        'wheel',
-        'keydown'
+        "mousemove",
+        "mousedown",
+        "wheel",
+        "keydown"
     ];
 
     var resetIdleState = throttle(function () {
@@ -35,8 +35,8 @@ define([
 
     return {
         isActive: function () {
-            return isActive
+            return isActive;
         },
         bindEvents: bindEvents
-    }
+    };
 });
