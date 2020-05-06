@@ -37,7 +37,7 @@ define([
                         trackerFactory.initialize(telemetry.configuration, getCustomProperties(telemetry), telemetry.user, telemetry.client);
                         
                         var tracker = trackerFactory.getTracker("cms");
-                        tracker.track("feature-options", options);
+                        tracker.track("featureOptions", options);
                     }
                 });
 
