@@ -22,6 +22,59 @@ define([
         var heartbeatTimeoutId;
         var tracker = trackerFactory.getTracker("cms", "edit");
 
+        function trackHeartbeat(commandType) {
+            if (idleTimer.isActive() && viewName) {
+                tracker.track("editing", {
+                    editMode: viewName,
+                    commandType: commandType || "heartbeat"
+                });
+            }
+
+            clearTimeout(heartbeatTimeoutId);
+            heartbeatTimeoutId = setTimeout(trackHeartbeat, heartbeatInterval * 1000);
+        }
+
+        function trackContentSaved() {
+            tracker.track("editContentSaved", {
+                editMode: viewName
+            });
+        }
+
+        function bindIframeEvents() {
+            try {
+                idleTimer.bindEvents(window["sitePreview"].document);
+            } catch (e) {
+                // catch error in x-domain scenario
+            }
+        }
+
+        function patchPageDataController() {
+            var originalIFrameLoaded = PageDataController.prototype._iFrameLoaded;
+            PageDataController.prototype._iFrameLoaded = function () {
+                originalIFrameLoaded.apply(this, arguments);
+                bindIframeEvents();
+            };
+            PageDataController.prototype._iFrameLoaded.nom = "_iFrameLoaded";
+        }
+
+        function patchContentModelServerSync() {
+            var originalPublishContentSavedMessage = ContentModelServerSync.prototype._publishContentSavedMessage;
+            ContentModelServerSync.prototype._publishContentSavedMessage = function (result) {
+                trackContentSaved();
+                originalPublishContentSavedMessage.apply(this, arguments);
+            };
+            ContentModelServerSync.prototype._publishContentSavedMessage.nom = "_publishContentSavedMessage";
+        }
+
+        function onViewChanged(type, args, data) {
+            viewName = data.viewName || "";
+        }
+
+        function onEditModeChanged(data) {
+            viewName = data.viewName || "";
+            trackHeartbeat("changeView");
+        }
+
         patchContentModelServerSync();
 
         // Triggered when changing view component, including Editing/Preview/Compare/ProjectView/ApprovalConfig, etc.
@@ -46,58 +99,5 @@ define([
         // Bind events on OPE iframe
         bindIframeEvents();
         patchPageDataController();
-
-        function patchPageDataController() {
-            var originalIFrameLoaded = PageDataController.prototype._iFrameLoaded;
-            PageDataController.prototype._iFrameLoaded = function () {
-                originalIFrameLoaded.apply(this, arguments);
-                bindIframeEvents();
-            };
-            PageDataController.prototype._iFrameLoaded.nom = "_iFrameLoaded";
-        }
-
-        function bindIframeEvents() {
-            try {
-                idleTimer.bindEvents(window["sitePreview"].document);
-            } catch (e) {
-                // catch error in x-domain scenario
-            }
-        }
-
-        function patchContentModelServerSync() {
-            var originalPublishContentSavedMessage = ContentModelServerSync.prototype._publishContentSavedMessage;
-            ContentModelServerSync.prototype._publishContentSavedMessage = function (result) {
-                trackContentSaved();
-                originalPublishContentSavedMessage.apply(this, arguments);
-            };
-            ContentModelServerSync.prototype._publishContentSavedMessage.nom = "_publishContentSavedMessage";
-        }
-
-        function onViewChanged(type, args, data) {
-            viewName = data.viewName || "";
-        }
-
-        function onEditModeChanged(data) {
-            viewName = data.viewName || "";
-            trackHeartbeat("changeView");
-        }
-
-        function trackHeartbeat(commandType) {
-            if (idleTimer.isActive() && viewName) {
-                tracker.track("editing", {
-                    editMode: viewName,
-                    commandType: commandType || "heartbeat"
-                });
-            }
-
-            clearTimeout(heartbeatTimeoutId);
-            heartbeatTimeoutId = setTimeout(trackHeartbeat, heartbeatInterval * 1000);
-        }
-
-        function trackContentSaved() {
-            tracker.track("editContentSaved", {
-                editMode: viewName
-            });
-        }
     };
 });

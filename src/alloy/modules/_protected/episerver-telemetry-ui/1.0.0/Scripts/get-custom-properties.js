@@ -1,10 +1,5 @@
 define([], function () {
     return function (telemetry) {
-        var customProperties = {
-            versions: telemetry.versions,
-            resolutions: getResolutions()
-        };
-
         function getResolutions() {
             var windowInnerWidth = window.innerWidth
                 || document.documentElement.clientWidth
@@ -20,6 +15,11 @@ define([], function () {
                 windowInnerHeight: windowInnerHeight
             };
         }
+
+        var customProperties = {
+            versions: telemetry.versions,
+            resolutions: getResolutions()
+        };
 
         return customProperties;
     };
