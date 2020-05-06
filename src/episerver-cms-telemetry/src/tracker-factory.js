@@ -15,12 +15,15 @@ const TrackerFactory = {
             });
         }
     },
-    getTracker(owner) {
-        if (!owner) {
-            throw new Error("Owner cannot be empty");
+    getTracker(/* owner or list of owners */) {
+        const array = [...arguments];
+        if(array.length === 0) {
+            throw new Error("No owner provided");
         }
+        const owner = array.join('_');
+
         return {
-            track: (eventName, data) => {
+            track(eventName, data) {
                 // appInsights is undefined if initialize has not been called.
                 if (!appInsights) {
                     return;
