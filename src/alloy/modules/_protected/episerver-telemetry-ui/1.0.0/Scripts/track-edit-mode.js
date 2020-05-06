@@ -20,7 +20,7 @@ define([
 
         var heartbeatInterval = 60;
         var heartbeatTimeoutId;
-        var tracker = trackerFactory.getTracker("cms");
+        var tracker = trackerFactory.getTracker("cms", "edit");
 
         patchContentModelServerSync();
 
