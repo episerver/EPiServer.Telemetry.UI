@@ -17,10 +17,10 @@ const TrackerFactory = {
     },
     getTracker(/* owner or list of owners */) {
         const array = [...arguments];
-        if(array.length === 0) {
+        if (array.length === 0) {
             throw new Error("No owner provided");
         }
-        const owner = array.join('_');
+        const owner = array.join("_");
 
         return {
             track(eventName, data) {
@@ -31,7 +31,7 @@ const TrackerFactory = {
                 console.log("track:", eventName, data);
                 appInsights.trackEvent({ name: owner + "_" + eventName }, data);
             }
-        }
+        };
     }
 };
 

@@ -1,0 +1,12 @@
+.git
+**/node_modules
+**/bin
+**/obj
+**/App_Data
+**/Static
+
+# Ignore generated files
+**/alloy/modules/_protected/episerver-telemetry-ui/1.0.0/Scripts/tracker-factory.js
+tracker-factory.js.map
+tracker-factory.js.uncompressed.js
+
