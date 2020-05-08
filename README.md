@@ -60,52 +60,33 @@ Examples of configuration options currently not used but are reasons to have thi
 
 > You can [visit the URL](https://cmsui.episerver.net/api/telemetryconfig) to see this object live.
 
-### Taxonomy of custom events
+### Current tracking events
 
-#### Always included
+The list of current tracking events will be provided soon.
 
-Every tracking event includes [standard Application Insights dimensions](https://docs.microsoft.com/en-us/azure/azure-monitor/app/api-custom-events-metrics#trackevent). The [authenticated user and client ID](https://docs.microsoft.com/en-us/azure/azure-monitor/app/api-custom-events-metrics#authenticated-users) are set as:
-
-* `ai.user.authUserId`: String, a SHA512 hash without salt, using user email if available and username otherwise. To anonymize user but allow tracking between products.
-* `ai.user.accountId`: String, a SHA512 hash without salt, using the License key. To allow for grouping of users.
-
-> See the anonymization code [here.](https://github.com/episerver/EPiServer.Labs.BlockEnhancements/blob/master/src/episerver-labs-block-enhancements/Telemetry/Internal/TelemetryConfigStore.cs)
-
-These `customDimensions` are added:
-
-* `versions`: All installed add-ons and their versions. The value is an object, and will always include these keys:
-    * `cms`: String, for the CMS version. E.g. `11.11.0.0`.
-    * `episerver-labs-block-enhancements`: String, for this add-on version. E.g. `0.6.3.0`.
-    * `shell`: String, for the CMS Shell version. E.g. `11.11.0.0`.
-* `resolutions`: Everything related to screen or window sizes:
-    * `screenWidth`: Number, width of screen.
-    * `screenHeight`: Number, height of screen.
-    * `windowInnerWidth`: Number, inner width of browser window.
-    * `windowInnerHeight`: Number, inner height of browser window.
-
-#### `editing`
-
-Includes the following `customDimensions`:
-
-* `editMode`: String, `"onpageedit" | "formedit" | "view" | "allpropertiescompare"`, specifies what edit mode is being used.
-* `commandType`: String, `"loadPage" | "changeView" | "heartbeat"`, specifies how the event is triggered
-
-#### `editContentSaved`
-
-Includes the following `customDimensions`:
-
-* `editMode`: String, `"onpageedit" | "formedit"`, specifies what edit mode is being used.
-
-#### `buttonClick`
-
-Includes the following `customDimensions`:
-
-* `action`: String, `"openSmartPublish"Dialogue`, specify what kind of action the button is doing.
-* `contentType`: String, `"page" | "block"`, specifies what content type we have during the click.
-
-#### Adding new trackers
+### Adding new trackers
 
 * Every commit adding or changing a tracking event must include a KQL query in the commit message that can be used to test and validate it.
-* Event name must be documented in this Readme with its intention.
-    * `publish` events will have the same name but use different data to distinguish between them. Any new publish trackers should add what data it collects to the list in the repo readme.
-    * Names should use `camelCase`. We stop using `kebab-case`, which is being used in `publish`, because it's harder to write KQL with it.
+* Events/Properties must be documented in the list with its intention.
+* Event name:
+    * An event's name should follow the format `Owner => Context(optional) => Action`
+        * Owner: Which team does the event belong. Owner is required to be set before using the tracker. The JIRA shorthand is used as team name (owner), e.g. ncd (if Core starts doing server-side API tracking), cms (for both Core and UI), com (Commerce), hapi/capp/etc
+        * Context: Which feature is the event from
+        * Action: What was the action taken
+    * All events are formatted using `camelCase`
+    * Examples of event names: cms_edit_publish, cms_projectView_batchApprove
+    * Example code
+        ```
+            // Set owner when get a tracker object from TrackerFactory
+            var tracker = TrackerFactory.getTracker("cms");
+            
+            // When tracking events, owner is automatically added to the eventName.
+            // In this case, event "cms_edit_buttonClick" is sent to AppInsights
+            tracker.track("edit_buttonClick", {
+            contentType: "block"
+            });
+        ```
+* Property name:
+    * Property name's format is `Context(optional) => propertyName`
+    * All property names are formatted using `camelCase`, underline(_) is used as separator.
+    * Example of property names: inlineEditing, projectView_publish
