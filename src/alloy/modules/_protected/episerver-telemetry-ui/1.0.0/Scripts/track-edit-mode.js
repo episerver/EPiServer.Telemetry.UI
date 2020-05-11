@@ -24,7 +24,7 @@ define([
 
         function trackHeartbeat(commandType) {
             if (idleTimer.isActive() && viewName) {
-                tracker.track("editing", {
+                tracker.track("time", {
                     editMode: viewName,
                     commandType: commandType || "heartbeat"
                 });
@@ -35,7 +35,7 @@ define([
         }
 
         function trackContentSaved() {
-            tracker.track("editContentSaved", {
+            tracker.track("contentSaved", {
                 editMode: viewName
             });
         }
