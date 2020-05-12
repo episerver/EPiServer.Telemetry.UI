@@ -1,4 +1,5 @@
 import { ApplicationInsights } from "@microsoft/applicationinsights-web";
+import { validate } from "./event-validation";
 
 let appInsights = null;
 
@@ -26,6 +27,9 @@ const TrackerFactory = {
             track(eventName, data) {
                 // appInsights is undefined if initialize has not been called.
                 if (!appInsights) {
+                    return;
+                }
+                if (!validate(eventName, data)) {
                     return;
                 }
                 console.log("track:", eventName, data);
