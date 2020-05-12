@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace Episerver.Telemetry.UI.Internal
+namespace Episerver.Telemetry.UI
 {
-    internal class TelemetryConfigModel
+    public class TelemetryConfigModel
     {
         public string Client { get; internal set; }
 

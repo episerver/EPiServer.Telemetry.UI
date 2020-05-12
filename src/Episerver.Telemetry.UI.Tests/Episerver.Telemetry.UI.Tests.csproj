@@ -50,8 +50,7 @@
       <Link>Properties\version.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RestResultExtensions.cs" />
-    <Compile Include="Telemetry\Internal\TelemetryConfigStoreTest.cs" />
+    <Compile Include="Telemetry\Internal\TelemetryServiceTest.cs" />
     <Compile Include="Telemetry\Internal\TelemetryOptionsTransformTest.cs" />
     <Compile Include="Telemetry\TelemetryOptionsTest.cs" />
   </ItemGroup>

@@ -147,12 +147,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Internal\TelemetryConfigModel.cs" />
     <Compile Include="Internal\TelemetryConfigStore.cs" />
     <Compile Include="Internal\TelemetryInitialization.cs" />
     <Compile Include="Internal\TelemetryOptionsTransform.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TelemetryConfigModel.cs" />
     <Compile Include="TelemetryOptions.cs" />
+    <Compile Include="TelemetryService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
