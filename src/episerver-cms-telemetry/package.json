@@ -14,6 +14,11 @@
         "webpack-cli": "^3.3.10"
     },
     "scripts": {
-        "build": "webpack"
+        "build": "webpack",
+        "test": "jest",
+        "test:debug": "node --inspect-brk ./node_modules/jest/bin/jest.js --runInBand"
+    },
+    "devDependencies": {
+        "jest": "^26.0.1"
     }
 }
