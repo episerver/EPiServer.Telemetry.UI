@@ -1,24 +1,32 @@
 {
-    "name": "episerver-cms-telemetry",
+    "name": "@episerver/cms-telemetry",
+    "description": "Telemetry library for Episerver CMS products",
     "version": "0.1.0",
-    "main": "tracker-factory.js",
+    "main": "dist/tracker-factory.js",
+    "types": "dist/tracker-factory.d.ts",
+    "files": [
+        "dist/"
+    ],
     "license": "Apache-2.0",
-    "private": true,
-    "dependencies": {
+    "devDependencies": {
         "@babel/core": "^7.7.4",
         "@babel/preset-env": "^7.7.4",
-        "@microsoft/applicationinsights-web": "^2.3.1",
-        "babel-loader": "^8.0.6",
-        "babel-plugin-transform-remove-console": "^6.9.4",
+        "@babel/preset-typescript": "^7.1.0",
+        "@types/jest": "^25.2.1",
+        "dts-bundle-generator": "^4.3.0",
+        "jest": "^26.0.1",
+        "ts-loader": "^7.0.2",
+        "typescript": "^3.8.3",
         "webpack": "^4.42.0",
         "webpack-cli": "^3.3.10"
     },
+    "dependencies": {
+        "@microsoft/applicationinsights-web": "^2.3.1"
+    },
     "scripts": {
         "build": "webpack",
+        "generate-declarations": "dts-bundle-generator --out-file dist/tracker-factory.d.ts src/tracker-factory.ts",
         "test": "jest",
         "test:debug": "node --inspect-brk ./node_modules/jest/bin/jest.js --runInBand"
-    },
-    "devDependencies": {
-        "jest": "^26.0.1"
     }
 }

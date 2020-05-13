@@ -19,11 +19,11 @@ const unsupportedNames = [
 describe("#validate", () => {
 
     test.each(supportedNames)("returns `true` when event name contains '%s'", name => {
-        expect(validate(name)).toBe(true);
+        expect(validate(name, null)).toBe(true);
     });
 
     test.each(unsupportedNames)("returns `false` when event name contains '%s'", name => {
-        expect(validate(name)).toBe(false);
+        expect(validate(name, null)).toBe(false);
     });
 
     describe("when event name is valid", () => {
