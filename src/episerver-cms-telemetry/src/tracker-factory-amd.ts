@@ -11,8 +11,8 @@ const trackerFactory = {
         factory = new TrackerFactory({ config, authenticatedUserId, accountId, customProperties });
     },
 
-    getTracker(owner: string) {
-        return factory.getTracker(owner);
+    getTracker(team: string) {
+        return factory.getTracker(team);
     }
 }
 

@@ -17,11 +17,11 @@ export interface ITracker {
  * AppInsights ITracker implementation
  */
 class Tracker implements ITracker {
-    private readonly owner: string;
+    private readonly team: string;
     private readonly appInsights: ApplicationInsights;
 
-    constructor(owner: string, appInsights: ApplicationInsights) {
-        this.owner = owner;
+    constructor(team: string, appInsights: ApplicationInsights) {
+        this.team = team;
         this.appInsights = appInsights;
     }
 
@@ -30,7 +30,7 @@ class Tracker implements ITracker {
             return;
         }
 
-        const name = this.owner + "_" + eventName;
+        const name = this.team + "_" + eventName;
         console.log("track:", name, data);
         this.appInsights.trackEvent({name: name}, data);
     }
@@ -47,13 +47,13 @@ class NullTracker implements ITracker {
 export interface ITrackerFactory {
     /**
      * Creates an instance of TrackerFactory.
-     * @param owners -  List of `owners` of the tracker that will be prefixed to every event name
+     * @param team -  Team is required to be set before using the tracker. If it's team name then please use the JIRA shorthand e.g cms or com.
      */
-    getTracker(...owners: string[]): ITracker;
+    getTracker(team: string): ITracker;
 }
 
 class NullTrackerFactory implements ITrackerFactory {
-    getTracker(...owners: string[]): ITracker {
+    getTracker(team: string): ITracker {
         return new NullTracker()
     }
 }
@@ -125,13 +125,13 @@ export default class TrackerFactory implements ITrackerFactory {
 
     /**
      * Creates an instance of TrackerFactory.
-     * @param owners -  List of `owners` of the tracker that will be prefixed to every event name
+     * @param team - Team is required to be set before using the tracker. If it's team name then please use the JIRA shorthand e.g cms or com.
      */
-    getTracker(...owners: string[]): ITracker {
-        if (!owners || owners.length === 0) {
-            throw new Error("No owner provided");
+    getTracker(team: string): ITracker {
+        if (!team) {
+            throw new Error("Team is required to be set before using the tracker. If it's team name then please use the JIRA shorthand e.g cms or com.");
         }
 
-        return new Tracker(owners.join('_'), this.appInsights);
+        return new Tracker(team, this.appInsights);
     }
 }
