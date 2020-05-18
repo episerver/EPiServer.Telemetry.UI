@@ -1,4 +1,4 @@
-import TrackerFactory, { Dictionary, ITrackerFactory, TelemetryConfiguration } from "./tracker-factory";
+import TrackerFactory, { Dictionary, ITrackerFactory, Owner, TelemetryConfiguration } from "./tracker-factory";
 
 let factory: ITrackerFactory;
 
@@ -11,8 +11,8 @@ const trackerFactory = {
         factory = new TrackerFactory({ config, authenticatedUserId, accountId, customProperties });
     },
 
-    getTracker(team: string) {
-        return factory.getTracker(team);
+    getTracker(owner: Owner | string) {
+        return factory.getTracker(owner);
     }
 }
 

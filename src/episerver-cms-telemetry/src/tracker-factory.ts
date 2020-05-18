@@ -2,6 +2,25 @@ import { ApplicationInsights } from "@microsoft/applicationinsights-web";
 import { validate } from "./event-validation";
 
 /**
+ * List of predefined owner names described as JIRA project keys
+ */
+export enum Owner {
+    Cms = "cms",
+    Commerce = "com",
+    Find = "find",
+    ProfileStore = "prof",
+    // The Add-ons team is one team with many addons, these are some commonly used ones:
+    HeadlessAPI = "hapi",
+    ChangeApproval = "capp",
+    Forms = "aform",
+    LanguageManager = "lm",
+    LiveMonitor = "limo",
+    PdfViewer = "pdv",
+    SocialReach = "sr",
+    PowerSlice = "pslice"
+}
+
+/**
  * Tracker
  */
 export interface ITracker {
@@ -17,11 +36,11 @@ export interface ITracker {
  * AppInsights ITracker implementation
  */
 class Tracker implements ITracker {
-    private readonly team: string;
+    private readonly owner: Owner | string;
     private readonly appInsights: ApplicationInsights;
 
-    constructor(team: string, appInsights: ApplicationInsights) {
-        this.team = team;
+    constructor(owner: Owner | string, appInsights: ApplicationInsights) {
+        this.owner = owner;
         this.appInsights = appInsights;
     }
 
@@ -30,7 +49,7 @@ class Tracker implements ITracker {
             return;
         }
 
-        const name = this.team + "_" + eventName;
+        const name = this.owner + "_" + eventName;
         console.log("track:", name, data);
         this.appInsights.trackEvent({name: name}, data);
     }
@@ -47,13 +66,13 @@ class NullTracker implements ITracker {
 export interface ITrackerFactory {
     /**
      * Creates an instance of TrackerFactory.
-     * @param team -  Team is required to be set before using the tracker. If it's team name then please use the JIRA shorthand e.g cms or com.
+     * @param owner -  Owner is required to be set before using the tracker. If it's team name then please use the JIRA project key e.g cms or com.
      */
-    getTracker(team: string): ITracker;
+    getTracker(owner: Owner | string): ITracker;
 }
 
 class NullTrackerFactory implements ITrackerFactory {
-    getTracker(team: string): ITracker {
+    getTracker(owner: Owner | string): ITracker {
         return new NullTracker()
     }
 }
@@ -125,13 +144,13 @@ export default class TrackerFactory implements ITrackerFactory {
 
     /**
      * Creates an instance of TrackerFactory.
-     * @param team - Team is required to be set before using the tracker. If it's team name then please use the JIRA shorthand e.g cms or com.
+     * @param owner - Owner is required to be set before using the tracker. If it's team name then please use the JIRA project key e.g cms or com.
      */
-    getTracker(team: string): ITracker {
-        if (!team) {
-            throw new Error("Team is required to be set before using the tracker. If it's team name then please use the JIRA shorthand e.g cms or com.");
+    getTracker(owner: Owner | string): ITracker {
+        if (!owner) {
+            throw new Error("Owner is required to be set before using the tracker. If it's team name then please use the JIRA shorthand e.g cms or com.");
         }
 
-        return new Tracker(team, this.appInsights);
+        return new Tracker(owner, this.appInsights);
     }
 }
