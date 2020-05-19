@@ -17,6 +17,9 @@ const unsupportedNames = [
 ];
 
 describe("#validate", () => {
+    beforeEach(() => {
+        jest.spyOn(console, "error").mockImplementation(() => {});
+    });
 
     test.each(supportedNames)("returns `true` when event name contains '%s'", name => {
         expect(validate(name, null)).toBe(true);
