@@ -94,7 +94,8 @@ export interface TrackerFactoryConfiguration {
  * Tracker factory
  */
 export default class TrackerFactory {
-    appInsights = null;
+    private appInsights = null;
+    private queuedEvents = [];
 
     /**
      * Initializes the TrackerFactory instance with configuration settings.
@@ -117,6 +118,8 @@ export default class TrackerFactory {
                 });
             });
         }
+
+        this.processQueuedEvents();
     }
 
     /**
@@ -140,10 +143,22 @@ export default class TrackerFactory {
 
         return new Tracker(owner, (eventName, data) => {
             if (!this.appInsights) {
+                this.queuedEvents.push({ eventName, data });
                 return;
             }
 
-            this.appInsights.trackEvent(eventName, data);
+            this.send(eventName, data);
         });
+    }
+
+    private processQueuedEvents() {
+        while (this.queuedEvents.length > 0) {
+            const nextEvent = this.queuedEvents.pop();
+            this.send(nextEvent.eventName, nextEvent.data);
+        }
+    }
+
+    private send(eventName, data) {
+        this.appInsights.trackEvent(eventName, data);
     }
 }
