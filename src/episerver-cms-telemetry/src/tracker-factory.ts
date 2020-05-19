@@ -32,16 +32,18 @@ export interface ITracker {
     track(eventName: string, data: object);
 }
 
+type TrackEventCallback = (eventName: string, data: object) => void;
+
 /**
  * AppInsights ITracker implementation
  */
 class Tracker implements ITracker {
     private readonly owner: Owner | string;
-    private readonly appInsights: ApplicationInsights;
+    private readonly trackEventCallback: TrackEventCallback;
 
-    constructor(owner: Owner | string, appInsights: ApplicationInsights) {
+    constructor(owner: Owner | string, trackEventCallback: TrackEventCallback) {
         this.owner = owner;
-        this.appInsights = appInsights;
+        this.trackEventCallback = trackEventCallback;
     }
 
     track(eventName: string, data: object) {
@@ -51,29 +53,7 @@ class Tracker implements ITracker {
 
         const name = this.owner + "_" + eventName;
         console.log("track:", name, data);
-        this.appInsights.trackEvent({name: name}, data);
-    }
-}
-
-/**
- * NullValue ITracker implementation, does not send any events
- */
-class NullTracker implements ITracker {
-    track(eventName: string, data: object) {
-    }
-}
-
-export interface ITrackerFactory {
-    /**
-     * Creates an instance of TrackerFactory.
-     * @param owner -  Owner is required to be set before using the tracker. If it's team name then please use the JIRA project key e.g cms or com.
-     */
-    getTracker(owner: Owner | string): ITracker;
-}
-
-class NullTrackerFactory implements ITrackerFactory {
-    getTracker(owner: Owner | string): ITracker {
-        return new NullTracker()
+        this.trackEventCallback(eventName, data);
     }
 }
 
@@ -113,17 +93,21 @@ export interface TrackerFactoryConfiguration {
 /**
  * Tracker factory
  */
-export default class TrackerFactory implements ITrackerFactory {
+export default class TrackerFactory {
     appInsights = null;
 
     /**
-     * Creates an instance of TrackerFactory.
+     * Initializes the TrackerFactory instance with configuration settings.
      * @param factoryConfiguration - Configuration object
      */
-    constructor(factoryConfiguration: TrackerFactoryConfiguration) {
+    initialize(factoryConfiguration: TrackerFactoryConfiguration) {
+        if (this.appInsights) {
+            return;
+        }
+
         const { config, authenticatedUserId, accountId, customProperties } = factoryConfiguration;
 
-        this.appInsights = new ApplicationInsights({config});
+        this.appInsights = new ApplicationInsights({ config });
         this.appInsights.loadAppInsights();
         this.appInsights.setAuthenticatedUserContext(authenticatedUserId, accountId);
         if (customProperties) {
@@ -136,10 +120,13 @@ export default class TrackerFactory implements ITrackerFactory {
     }
 
     /**
-     * Creates a null-value implementation of the factory that will not send any events
+     * Creates an instance of TrackerFactory.
+     * @param factoryConfiguration - Configuration object, no events will be tracked unless configuration is provided
      */
-    static NullTracker(): ITrackerFactory {
-        return new NullTrackerFactory();
+    constructor(factoryConfiguration?: TrackerFactoryConfiguration) {
+        if (factoryConfiguration) {
+            this.initialize(factoryConfiguration);
+        }
     }
 
     /**
@@ -151,6 +138,12 @@ export default class TrackerFactory implements ITrackerFactory {
             throw new Error("Owner is required to be set before using the tracker. If it's team name then please use the JIRA shorthand e.g cms or com.");
         }
 
-        return new Tracker(owner, this.appInsights);
+        return new Tracker(owner, (eventName, data) => {
+            if (!this.appInsights) {
+                return;
+            }
+
+            this.appInsights.trackEvent(eventName, data);
+        });
     }
 }
