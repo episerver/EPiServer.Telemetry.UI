@@ -53,7 +53,7 @@ class Tracker implements ITracker {
 
         const name = this.owner + "_" + eventName;
         console.log("track:", name, data);
-        this.trackEventCallback(eventName, data);
+        this.trackEventCallback(name, data);
     }
 }
 
@@ -153,7 +153,7 @@ export default class TrackerFactory {
 
     private processQueuedEvents() {
         while (this.queuedEvents.length > 0) {
-            const nextEvent = this.queuedEvents.pop();
+            const nextEvent = this.queuedEvents.shift();
             this.send(nextEvent.eventName, nextEvent.data);
         }
     }

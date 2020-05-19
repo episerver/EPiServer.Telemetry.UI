@@ -11,13 +11,16 @@ describe("#TrackerFactory", () => {
             trackEventSpy = jest.spyOn(trackerFactory, "send");
             const cmsTracker = trackerFactory.getTracker(Owner.Cms);
             cmsTracker.track("foo", {
-                foo: "bar"
+                foo: "foo"
             });
-        })
+            cmsTracker.track("bar", {
+                bar: "bar"
+            });
+        });
 
         test("should not send the event to appInsights", () => {
             expect(trackEventSpy).not.toHaveBeenCalled();
-        })
+        });
 
         describe("after initializing the factory", () => {
             let fakeConfig = { instrumentationKey: "fake" };
@@ -29,9 +32,15 @@ describe("#TrackerFactory", () => {
                 });
             });
 
-            test("should send the event to appInsights", () => {
-                expect(trackEventSpy).toHaveBeenCalled();
-            })
+            test("should send the events with concatenated owner and eventName to appInsights in correct order", () => {
+                expect(trackEventSpy).toHaveBeenNthCalledWith(1, "cms_foo", {
+                    foo: "foo"
+                });
+
+                expect(trackEventSpy).toHaveBeenNthCalledWith(2, "cms_bar", {
+                    bar: "bar"
+                });
+            });
         })
     });
 });

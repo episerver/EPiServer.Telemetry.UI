@@ -3892,6 +3892,11 @@ jest-snapshot@^26.0.1:
     pretty-format "^26.0.1"
     semver "^7.3.2"
 
+jest-teamcity-reporter@^0.9.0:
+  version "0.9.0"
+  resolved "https://registry.yarnpkg.com/jest-teamcity-reporter/-/jest-teamcity-reporter-0.9.0.tgz#a9f337a928a14e7e84163817456b930ecf7cbce8"
+  integrity sha512-q6W+ZaJSCIXmxC9wsY67zNn+vwG/EgKJygYJYH860jih5zS6mc2ZFc4v78gh6rgzgM9/siUtQm7SnRunYuWmVw==
+
 jest-util@^26.0.1:
   version "26.0.1"
   resolved "https://registry.yarnpkg.com/jest-util/-/jest-util-26.0.1.tgz#72c4c51177b695fdd795ca072a6f94e3d7cef00a"
