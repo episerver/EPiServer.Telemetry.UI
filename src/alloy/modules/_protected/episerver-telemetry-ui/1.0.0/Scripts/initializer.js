@@ -1,5 +1,6 @@
 define([
     "dojo/_base/declare",
+    "dojo/Deferred",
     "epi/dependency",
     "epi/routes",
     "epi/shell/store/JsonRest",
@@ -9,6 +10,7 @@ define([
     "episerver-telemetry-ui/track-edit-mode"
 ], function (
     declare,
+    Deferred,
     dependency,
     routes,
     JsonRest,
@@ -20,6 +22,9 @@ define([
     return declare([_Module], {
         initialize: function () {
             this.inherited(arguments);
+
+            var def = new Deferred();
+
             var registry = dependency.resolve("epi.storeregistry");
 
             registry.add("episerver-telemetry-ui.store",
@@ -27,7 +32,6 @@ define([
                     target: routes.getRestPath({ moduleArea: "episerver-telemetry-ui", storeName: "telemetryconfig" })
                 })
             );
-            var options = this._settings.options;
 
             dependency.resolve("epi.storeregistry")
                 .get("episerver-telemetry-ui.store")
@@ -35,13 +39,13 @@ define([
                     // Prevent errors when initializing tracker without the instrumentationKey
                     if (telemetry.configuration && telemetry.configuration.instrumentationKey) {
                         trackerFactory.initialize(telemetry.configuration, getCustomProperties(telemetry), telemetry.user, telemetry.client);
-
-                        var tracker = trackerFactory.getTracker("cms");
-                        tracker.track("featureOptions", options);
                     }
+                    trackEditMode();
+                }).always(function () {
+                    def.resolve();
                 });
 
-            trackEditMode();
+            return def.promise;
         }
     });
 });
