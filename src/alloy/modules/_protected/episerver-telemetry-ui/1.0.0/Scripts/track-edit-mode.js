@@ -5,7 +5,7 @@ define([
     "epi-cms/contentediting/ContentModelServerSync",
     "epi-cms/contentediting/PageDataController",
     "episerver-telemetry-ui/idle-timer",
-    "episerver-telemetry-ui/tracker-factory"
+    "episerver-telemetry-ui/tracker"
 ], function (
     topic,
     when,
@@ -13,18 +13,17 @@ define([
     ContentModelServerSync,
     PageDataController,
     idleTimer,
-    trackerFactory
+    tracker
 ) {
     return function () {
         var viewName = "";
 
         var heartbeatInterval = 60;
         var heartbeatTimeoutId;
-        var tracker = trackerFactory.getTracker("cms", "edit");
 
         function trackHeartbeat(commandType) {
             if (idleTimer.isActive() && viewName) {
-                tracker.track("time", {
+                tracker.track("edit_time", {
                     editMode: viewName,
                     commandType: commandType || "heartbeat"
                 });
@@ -35,7 +34,7 @@ define([
         }
 
         function trackContentSaved() {
-            tracker.track("contentSaved", {
+            tracker.track("edit_contentSaved", {
                 editMode: viewName
             });
         }

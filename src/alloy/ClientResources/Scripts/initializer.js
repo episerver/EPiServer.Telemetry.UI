@@ -2,20 +2,19 @@ define([
     "dojo/_base/declare",
     "epi-cms/contentediting/command/Publish",
     "epi/_Module",
-    "episerver-telemetry-ui/tracker-factory"
+    "episerver-telemetry-ui/tracker"
 ], function (
     declare,
     PublishCommand,
     _Module,
-    trackerFactory
+    tracker
 ) {
     return declare([_Module], {
         initialize: function () {
             var originalExecute = PublishCommand.prototype.execute;
-            var tracker = trackerFactory.getTracker("cms");
 
             PublishCommand.prototype.execute = function () {
-                tracker.track("publish-test", {
+                tracker.track("publishTest", {
                     test: true
                 });
 
