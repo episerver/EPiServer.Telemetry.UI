@@ -19,6 +19,6 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="bin\EPiServer.Telemetry.UI.dll" target="lib\net45\" />
+    <file src="src\EPiServer.Telemetry.UI\bin\$configuration$\EPiServer.Telemetry.UI.dll" target="lib\net45\" />    
   </files>
 </package>
