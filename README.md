@@ -142,7 +142,7 @@ define([
         _execute: function() {
             this.enabled = !this.enabled;
 
-            tracker.track("preview", {
+            tracker.trackEvent("preview", {
                 enabled: this.enabled
             });
         }
@@ -247,7 +247,7 @@ without a need to call initializers explicitly.
         return function () {
 
             function onViewChanged(type, args, data) {
-                tracker.track("projects_viewChanged", {
+                tracker.trackEvent("projects_viewChanged", {
                     viewName: data.viewName || "";
                 });
             }

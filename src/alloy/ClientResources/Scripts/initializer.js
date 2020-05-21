@@ -14,7 +14,7 @@ define([
             var originalExecute = PublishCommand.prototype.execute;
 
             PublishCommand.prototype.execute = function () {
-                tracker.track("publishTest", {
+                tracker.trackEvent("publishTest", {
                     test: true
                 });
 
