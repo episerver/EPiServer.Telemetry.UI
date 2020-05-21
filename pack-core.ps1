@@ -8,4 +8,5 @@ $assemblyFileVersion = $fileVersionMatch.Groups[1].Value
 
 Write-Host "Creating nuget with $fileVersionMatch version"
 
-Start-Process -NoNewWindow -Wait -FilePath $nuget -ArgumentList "pack", "$workingDirectory\src\alloy\EPiServer.Telemetry.UI.Core.nuspec", "-Version $assemblyFileVersion"
+Start-Process -NoNewWindow -Wait -FilePath $nuget -ArgumentList "pack", "$workingDirectory\build\packaging\EPiServer.Telemetry.UI.Core.nuspec", "-Version $assemblyFileVersion", "-Properties configuration=Release", "-BasePath ./", "-Verbosity detailed"
+

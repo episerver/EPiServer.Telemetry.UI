@@ -31,4 +31,5 @@ Write-Host "Creating nuget with $fileVersionMatch version and $version client as
 Set-Location src\alloy\modules\_protected\episerver-telemetry-ui
 ZipCurrentModule -moduleName episerver-telemetry-ui
 Set-Location $workingDirectory
-Start-Process -NoNewWindow -Wait -FilePath $nuget -ArgumentList "pack", "$workingDirectory\src\alloy\EPiServer.Telemetry.UI.nuspec", "-Version $assemblyFileVersion"
+Start-Process -NoNewWindow -Wait -FilePath $nuget -ArgumentList "pack", "$workingDirectory\build\packaging\EPiServer.Telemetry.UI.nuspec", "-Version $assemblyFileVersion", "-Properties configuration=Release", "-BasePath ./", "-Verbosity detailed"
+
