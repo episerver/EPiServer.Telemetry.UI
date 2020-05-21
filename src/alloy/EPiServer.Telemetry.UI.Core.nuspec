@@ -10,7 +10,7 @@
     <projectUrl>http://www.episerver.com/web-content-management/</projectUrl>
     <licenseUrl>http://www.episerver.com/eula/</licenseUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
-    <description>Episerver temetry server package</description>
+    <description>Episerver telemetry server package</description>
     <copyright>Copyright 2020</copyright>
     <tags>telemetry</tags>
     <dependencies>
