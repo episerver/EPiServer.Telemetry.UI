@@ -7,8 +7,8 @@
     <ProjectGuid>{72EBA180-C0F0-4615-991F-FF6BB367ACEC}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Episerver.Telemetry.UI</RootNamespace>
-    <AssemblyName>Episerver.Telemetry.UI</AssemblyName>
+    <RootNamespace>EPiServer.Telemetry.UI</RootNamespace>
+    <AssemblyName>EPiServer.Telemetry.UI</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>

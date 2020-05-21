@@ -9,7 +9,7 @@ using EPiServer.Shell.Modules;
 using Moq;
 using Xunit;
 
-namespace Episerver.Telemetry.UI.Tests.Telemetry.Internal
+namespace EPiServer.Telemetry.UI.Tests.Telemetry.Internal
 {
     public class TelemetryServiceTest
     {

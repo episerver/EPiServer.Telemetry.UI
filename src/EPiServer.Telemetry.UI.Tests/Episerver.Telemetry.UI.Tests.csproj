@@ -7,8 +7,8 @@
     <ProjectGuid>{AAA884E4-A777-4211-88E3-8779FD83C3AA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Episerver.Telemetry.UI.Tests</RootNamespace>
-    <AssemblyName>Episerver.Telemetry.UI.Tests</AssemblyName>
+    <RootNamespace>EPiServer.Telemetry.UI.Tests</RootNamespace>
+    <AssemblyName>EPiServer.Telemetry.UI.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -80,9 +80,9 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Episerver.Telemetry.UI\Episerver.Telemetry.UI.csproj">
+    <ProjectReference Include="..\EPiServer.Telemetry.UI\EPiServer.Telemetry.UI.csproj">
       <Project>{72eba180-c0f0-4615-991f-ff6bb367acec}</Project>
-      <Name>Episerver.Telemetry.UI</Name>
+      <Name>EPiServer.Telemetry.UI</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />

@@ -1,6 +1,6 @@
 ﻿using Xunit;
 
-namespace Episerver.Telemetry.UI.Tests.Telemetry
+namespace EPiServer.Telemetry.UI.Tests.Telemetry
 {
     public class TelemetryOptionsTest
     {

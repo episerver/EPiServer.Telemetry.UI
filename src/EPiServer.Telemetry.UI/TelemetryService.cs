@@ -12,7 +12,7 @@ using EPiServer.Personalization;
 using EPiServer.Security;
 using EPiServer.Shell.Modules;
 
-namespace Episerver.Telemetry.UI
+namespace EPiServer.Telemetry.UI
 {
     public class TelemetryService
     {

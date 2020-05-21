@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Episerver.Telemetry.UI
+namespace EPiServer.Telemetry.UI
 {
     public class TelemetryConfigModel
     {

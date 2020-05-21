@@ -2,7 +2,7 @@
 using System.Web.Mvc;
 using EPiServer.Shell.Services.Rest;
 
-namespace Episerver.Telemetry.UI.Internal
+namespace EPiServer.Telemetry.UI.Internal
 {
     [RestStore("telemetryconfig")]
     public class TelemetryConfigStore : RestControllerBase

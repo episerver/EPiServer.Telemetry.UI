@@ -1,8 +1,8 @@
 ﻿using System.Collections.Specialized;
-using Episerver.Telemetry.UI.Internal;
+using EPiServer.Telemetry.UI.Internal;
 using Xunit;
 
-namespace Episerver.Telemetry.UI.Tests.Telemetry.Internal
+namespace EPiServer.Telemetry.UI.Tests.Telemetry.Internal
 {
     public class TelemetryOptionsTransformTest
     {
