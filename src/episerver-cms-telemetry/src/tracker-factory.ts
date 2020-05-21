@@ -29,7 +29,7 @@ export interface ITracker {
      * @param eventName - Event name
      * @param data - Tracked object
      */
-    track(eventName: string, data: object);
+    trackEvent(eventName: string, data: object);
 }
 
 type TrackEventCallback = (eventName: string, data: object) => void;
@@ -46,13 +46,13 @@ class Tracker implements ITracker {
         this.trackEventCallback = trackEventCallback;
     }
 
-    track(eventName: string, data: object) {
+    trackEvent(eventName: string, data: object) {
         if (!validate(eventName, data)) {
             return;
         }
 
         const name = this.owner + "_" + eventName;
-        console.log("track:", name, data);
+        console.log("trackEvent:", name, data);
         this.trackEventCallback(name, data);
     }
 }

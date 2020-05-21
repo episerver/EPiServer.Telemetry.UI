@@ -1,7 +1,7 @@
 import TrackerFactory, { Owner } from './tracker-factory';
 
 describe("#TrackerFactory", () => {
-    describe("when trying to track while the factory is uninitialized", () => {
+    describe("when trying to trackEvent while the factory is uninitialized", () => {
         let trackerFactory: TrackerFactory;
         let trackEventSpy;
 
@@ -10,10 +10,10 @@ describe("#TrackerFactory", () => {
             // @ts-ignore
             trackEventSpy = jest.spyOn(trackerFactory, "send");
             const cmsTracker = trackerFactory.getTracker(Owner.Cms);
-            cmsTracker.track("foo", {
+            cmsTracker.trackEvent("foo", {
                 foo: "foo"
             });
-            cmsTracker.track("bar", {
+            cmsTracker.trackEvent("bar", {
                 bar: "bar"
             });
         });
