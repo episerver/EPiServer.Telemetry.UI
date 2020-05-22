@@ -18,8 +18,8 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="src\alloy\modules\_protected\episerver-telemetry-ui\episerver-telemetry-ui.zip" target="content\modules\_protected\episerver-telemetry-ui\" />
-    <file src="src\alloy\modules\_protected\episerver-telemetry-ui\web.config" target="content\modules\_protected\episerver-telemetry-ui\" />
+    <file src="src\AlloyMvcTemplates\modules\_protected\episerver-telemetry-ui\episerver-telemetry-ui.zip" target="content\modules\_protected\episerver-telemetry-ui\" />
+    <file src="src\AlloyMvcTemplates\modules\_protected\episerver-telemetry-ui\web.config" target="content\modules\_protected\episerver-telemetry-ui\" />
     <file src="build\packaging\web.config.transform" target="content" />
   </files>
 </package>

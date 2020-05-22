@@ -14,7 +14,7 @@ const config = {
 const amdOutput = {
     libraryTarget: "amd",
     libraryExport: "default",
-    path: path.resolve(__dirname, "./../alloy/modules/_protected/episerver-telemetry-ui/1.0.0/Scripts")
+    path: path.resolve(__dirname, "./../AlloyMvcTemplates/modules/_protected/episerver-telemetry-ui/1.0.0/Scripts")
 };
 
 const productionConfig = { ...config, devtool: "source-map", mode: "production" };
