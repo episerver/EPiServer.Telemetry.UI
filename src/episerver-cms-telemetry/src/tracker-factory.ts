@@ -93,7 +93,7 @@ export interface TrackerFactoryConfiguration {
 /**
  * Tracker factory
  */
-export default class TrackerFactory {
+export class TrackerFactory {
     private appInsights = null;
     private queuedEvents = [];
 

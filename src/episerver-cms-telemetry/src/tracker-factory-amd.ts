@@ -1,4 +1,4 @@
-import TrackerFactory, { Dictionary, Owner, TelemetryConfiguration } from "./tracker-factory";
+import { Dictionary, Owner, TelemetryConfiguration, TrackerFactory } from "./tracker-factory";
 
 let factory: TrackerFactory = new TrackerFactory();
 
