@@ -1,4 +1,4 @@
-import TrackerFactory, { Owner } from './tracker-factory';
+import { Owner, TrackerFactory } from './tracker-factory';
 
 describe("#TrackerFactory", () => {
     describe("when trying to trackEvent while the factory is uninitialized", () => {
