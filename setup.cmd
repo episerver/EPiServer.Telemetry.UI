@@ -3,7 +3,7 @@ SETLOCAL
 
 SET PATH=.\.ci\tools\;.\build\tools\;%PATH%
 
-SET AlloyMVC=src\alloy
+SET AlloyMVC=src\AlloyMvcTemplates
 
 IF EXIST %AlloyMVC%\App_Data (
     ECHO Remove all files from the app data folder
