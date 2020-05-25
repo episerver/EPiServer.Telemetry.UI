@@ -159,6 +159,6 @@ export class TrackerFactory {
     }
 
     private send(eventName, data) {
-        this.appInsights.trackEvent(eventName, data);
+        this.appInsights.trackEvent({ name: eventName }, data);
     }
 }
