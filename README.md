@@ -270,4 +270,4 @@ Every tracking event includes [standard Application Insights dimensions](https:/
 
 ### Current tracking events
 
-> The list of current tracking events will be provided soon.
+See the tracking events and their purpose in this file: [Trackers.xlsx](./Trackers.xlsx)
