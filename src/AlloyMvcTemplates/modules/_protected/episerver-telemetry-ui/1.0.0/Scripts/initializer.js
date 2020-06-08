@@ -7,7 +7,8 @@ define([
     "epi/_Module",
     "episerver-telemetry-ui/tracker-factory",
     "episerver-telemetry-ui/get-custom-properties",
-    "episerver-telemetry-ui/track-edit-mode"
+    "episerver-telemetry-ui/track-edit-mode",
+    "episerver-telemetry-ui/tracker"
 ], function (
     declare,
     Deferred,
@@ -17,7 +18,8 @@ define([
     _Module,
     trackerFactory,
     getCustomProperties,
-    trackEditMode
+    trackEditMode,
+    tracker
 ) {
     return declare([_Module], {
         initialize: function () {
@@ -40,6 +42,7 @@ define([
                     if (telemetry.configuration && telemetry.configuration.instrumentationKey) {
                         trackerFactory.initialize(telemetry.configuration, telemetry.user, telemetry.client, getCustomProperties(telemetry));
                     }
+                    tracker.trackEvent("loaded");
                     trackEditMode();
                 }).always(function () {
                     def.resolve();
