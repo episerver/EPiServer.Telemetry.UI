@@ -11,6 +11,7 @@ using EPiServer.Licensing;
 using EPiServer.Personalization;
 using EPiServer.Security;
 using EPiServer.Shell.Modules;
+using EPiServer.Shell.Security;
 
 namespace EPiServer.Telemetry.UI
 {
@@ -21,19 +22,22 @@ namespace EPiServer.Telemetry.UI
         private readonly IPrincipalAccessor _principalAccessor;
         private readonly ModuleTable _moduleTable;
         private readonly IObjectSerializer _objectSerializer;
+        private readonly UIUserProvider _uiUserProvider;
 
         public TelemetryService(
             TelemetryOptions telemetryOptions,
             LicensingOptions licensingOptions,
             IPrincipalAccessor principalAccessor,
             ModuleTable moduleTable,
-            IObjectSerializer objectSerializer)
+            IObjectSerializer objectSerializer,
+            UIUserProvider uiUserProvider)
         {
             _telemetryOptions = telemetryOptions;
             _licensingOptions = licensingOptions;
             _principalAccessor = principalAccessor;
             _moduleTable = moduleTable;
             _objectSerializer = objectSerializer;
+            _uiUserProvider = uiUserProvider;
         }
 
         public async Task<TelemetryConfigModel> Get()
@@ -43,11 +47,14 @@ namespace EPiServer.Telemetry.UI
                 return TelemetryConfigModel.Disabled;
             }
 
+            var user = _uiUserProvider.GetUser(_principalAccessor.CurrentName());
             var telemetryConfigModel = new TelemetryConfigModel
             {
                 Client = GetClientHash(),
                 User = GetUserHash(),
-                Versions = GetVersions()
+                Versions = GetVersions(),
+                User_creationDate = user.CreationDate,
+                User_hasAdminAccess = PrincipalInfo.HasAdminAccess
             };
 
             var configuration = await GetTelemetryConfiguration(telemetryConfigModel).ConfigureAwait(false);
