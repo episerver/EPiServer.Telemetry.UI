@@ -13,7 +13,7 @@ namespace EPiServer.Telemetry.UI
 
         public IDictionary<string, string> Versions { get; internal set; }
 
-        public DateTime User_creationDate { get; internal set; }
+        public DateTime? User_creationDate { get; internal set; }
 
         public bool User_hasAdminAccess { get; internal set; }
 

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -53,7 +53,7 @@ namespace EPiServer.Telemetry.UI
                 Client = GetClientHash(),
                 User = GetUserHash(),
                 Versions = GetVersions(),
-                User_creationDate = user.CreationDate,
+                User_creationDate = user?.CreationDate,
                 User_hasAdminAccess = PrincipalInfo.HasAdminAccess
             };
 
