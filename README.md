@@ -270,4 +270,4 @@ Every tracking event includes [standard Application Insights dimensions](https:/
 
 ### Current tracking events
 
-See the tracking events and their purpose in this file: [Trackers.xlsx](./Trackers.xlsx)
+See the tracking events and their purpose in this file (read only link): [Trackers.xlsx](https://episerver99-my.sharepoint.com/:x:/g/personal/stefan_svebeck_episerver_com/EbTuzpm6_yBOg54Dh71eSqgBtdgj9-cSw1pr-hcMJ2xGoA?e=kb7cDq)
