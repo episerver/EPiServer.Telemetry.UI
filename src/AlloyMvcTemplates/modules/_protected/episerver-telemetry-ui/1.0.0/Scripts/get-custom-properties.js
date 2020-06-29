@@ -18,7 +18,9 @@ define([], function () {
 
         var customProperties = {
             versions: telemetry.versions,
-            resolutions: getResolutions()
+            resolutions: getResolutions(),
+            user_hasAdminAccess: telemetry.user_hasAdminAccess,
+            user_creationDate: telemetry.user_creationDate
         };
 
         return customProperties;
