@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace EPiServer.Telemetry.UI
 {
@@ -11,6 +12,10 @@ namespace EPiServer.Telemetry.UI
         public string User { get; internal set; }
 
         public IDictionary<string, string> Versions { get; internal set; }
+
+        public DateTime? User_creationDate { get; internal set; }
+
+        public bool User_hasAdminAccess { get; internal set; }
 
         internal static TelemetryConfigModel Disabled = new TelemetryConfigModel
         {

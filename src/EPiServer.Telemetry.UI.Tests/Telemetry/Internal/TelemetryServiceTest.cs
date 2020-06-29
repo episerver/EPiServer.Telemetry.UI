@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Net.Http;
 using System.Security.Principal;
 using System.Threading.Tasks;
@@ -6,6 +7,7 @@ using EPiServer.Framework.Serialization.Json.Internal;
 using EPiServer.Licensing;
 using EPiServer.Security;
 using EPiServer.Shell.Modules;
+using EPiServer.Shell.Security;
 using Moq;
 using Xunit;
 
@@ -18,6 +20,7 @@ namespace EPiServer.Telemetry.UI.Tests.Telemetry.Internal
         private readonly HttpResponseMessage _httpResponseMessage;
         private readonly TelemetryService _telemetryService;
         private readonly IPrincipalAccessor _principalAccessor;
+        private readonly Mock<UIUserProvider> _uiUserProviderMock;
 
         public TelemetryServiceTest()
         {
@@ -27,9 +30,13 @@ namespace EPiServer.Telemetry.UI.Tests.Telemetry.Internal
             var moduleTable = new Mock<ModuleTable>();
             moduleTable
                 .Setup(_ => _.GetModules())
-                .Returns(new[] { new ShellModule("CMS", null, null) });
+                .Returns(new[] {new ShellModule("CMS", null, null)});
 
-            _telemetryOptions = new TelemetryOptions { OptedIn = true };
+            _uiUserProviderMock = new Mock<UIUserProvider>();
+            _uiUserProviderMock.Setup(x => x.GetUser("username"))
+                .Returns(new FakeUser {CreationDate = new DateTime(2010, 1, 1)});
+
+            _telemetryOptions = new TelemetryOptions {OptedIn = true};
             _licensingOptions = new LicensingOptions
             {
                 LicenseKey = "LicenseKey"
@@ -38,7 +45,8 @@ namespace EPiServer.Telemetry.UI.Tests.Telemetry.Internal
             {
                 Content = new StringContent("{\"key\":true}")
             };
-            _telemetryService = new TelemetryService(_telemetryOptions, _licensingOptions, _principalAccessor, moduleTable.Object, new JsonObjectSerializer())
+            _telemetryService = new TelemetryService(_telemetryOptions, _licensingOptions, _principalAccessor,
+                moduleTable.Object, new JsonObjectSerializer(), _uiUserProviderMock.Object)
             {
                 GetRequestAsync = (string url) => Task.FromResult(_httpResponseMessage),
             };
@@ -180,6 +188,13 @@ namespace EPiServer.Telemetry.UI.Tests.Telemetry.Internal
         {
             var result = await _telemetryService.Get();
             Assert.Contains("CMS", result.Versions);
+        }
+
+        [Fact]
+        public async void Get_ShouldReturn_User_CreationDate()
+        {
+            var result = await _telemetryService.Get();
+            Assert.Equal(new DateTime(2010, 1, 1), result.User_creationDate);
         }
 
         [Fact]
