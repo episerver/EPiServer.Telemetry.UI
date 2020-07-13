@@ -432,6 +432,7 @@
     <Content Include="libman.json" />
     <Content Include="modules\_protected\episerver-telemetry-ui\1.0.0\Scripts\get-custom-properties.js" />
     <Content Include="modules\_protected\episerver-telemetry-ui\1.0.0\Scripts\idle-timer.js" />
+    <Content Include="modules\_protected\episerver-telemetry-ui\1.0.0\Scripts\track-projects.js" />
     <Content Include="modules\_protected\episerver-telemetry-ui\1.0.0\Scripts\tracker.js" />
     <Content Include="modules\_protected\episerver-telemetry-ui\1.0.0\Scripts\initializer.js" />
     <Content Include="modules\_protected\episerver-telemetry-ui\1.0.0\Scripts\track-edit-mode.js" />

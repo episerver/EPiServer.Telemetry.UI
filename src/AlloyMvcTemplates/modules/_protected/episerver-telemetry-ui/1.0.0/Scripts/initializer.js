@@ -8,6 +8,7 @@ define([
     "episerver-telemetry-ui/tracker-factory",
     "episerver-telemetry-ui/get-custom-properties",
     "episerver-telemetry-ui/track-edit-mode",
+    "episerver-telemetry-ui/track-projects",
     "episerver-telemetry-ui/tracker"
 ], function (
     declare,
@@ -19,6 +20,7 @@ define([
     trackerFactory,
     getCustomProperties,
     trackEditMode,
+    trackProjects,
     tracker
 ) {
     return declare([_Module], {
@@ -44,6 +46,7 @@ define([
                     }
                     tracker.trackEvent("loaded");
                     trackEditMode();
+                    trackProjects();
                 }).always(function () {
                     def.resolve();
                 });
