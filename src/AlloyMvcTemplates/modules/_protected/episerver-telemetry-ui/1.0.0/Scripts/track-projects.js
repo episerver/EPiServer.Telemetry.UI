@@ -17,7 +17,7 @@ define([
         }
 
         function onShowProjectOverview(args) {
-            if (args.uri.indexOf("epi.cms.project:///") !== -1) {
+            if (args.uri && args.uri.indexOf("epi.cms.project:///") !== -1) {
                 tracker.trackEvent("project_overview");
             }
         }
