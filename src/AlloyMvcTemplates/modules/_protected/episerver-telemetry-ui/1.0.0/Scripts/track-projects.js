@@ -2,6 +2,7 @@ define([
     "dojo/topic",
     "epi/epi",
     "epi-cms/project/command/AddProject",
+    "epi-cms/project/viewmodels/ProjectModeToolbarViewModel",
     "epi-cms/project/ProjectSelector",
     "epi-cms/project/ProjectSelectorList",
     "epi-cms/project/ProjectNotification",
@@ -10,6 +11,7 @@ define([
     topic,
     epi,
     AddProject,
+    ProjectModeToolbarViewModel,
     ProjectSelector,
     ProjectSelectorList,
     ProjectNotification,
@@ -22,6 +24,15 @@ define([
             tracker.trackEvent("project_create");
         };
         AddProject.prototype.onDialogExecute.nom = "onDialogExecute";
+    }
+
+    function patchRemoveProjectCommand() {
+        var originalRemoveProject = ProjectModeToolbarViewModel.prototype.removeProject;
+        ProjectModeToolbarViewModel.prototype.removeProject = function () {
+            originalRemoveProject.apply(this, arguments);
+            tracker.trackEvent("project_deleted");
+        };
+        ProjectModeToolbarViewModel.prototype.execute.nom = "removeProject";
     }
 
     function onShowProjectOverview(args) {
@@ -82,6 +93,8 @@ define([
         topic.subscribe("/epi/shell/context/request", onShowProjectOverview);
 
         patchAddProjectCommand();
+
+        patchRemoveProjectCommand();
 
         patchProjectSelector();
 
