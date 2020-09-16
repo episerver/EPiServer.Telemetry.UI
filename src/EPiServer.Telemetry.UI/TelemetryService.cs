@@ -83,7 +83,7 @@ namespace EPiServer.Telemetry.UI
             }
             catch
             {
-                return null;
+                return "development";
             }
         }
 
