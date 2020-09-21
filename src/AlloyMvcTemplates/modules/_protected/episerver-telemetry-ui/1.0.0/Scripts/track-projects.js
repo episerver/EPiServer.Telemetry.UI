@@ -35,12 +35,6 @@ define([
         ProjectModeToolbarViewModel.prototype.execute.nom = "removeProject";
     }
 
-    function onShowProjectOverview(args) {
-        if (args.uri && args.uri.indexOf("epi.cms.project:///") !== -1) {
-            tracker.trackEvent("project_overview");
-        }
-    }
-
     function patchProjectSelector() {
         var originalLoadAndOpenDropDown = ProjectSelector.prototype.loadAndOpenDropDown;
         ProjectSelector.prototype.loadAndOpenDropDown = function () {
@@ -90,7 +84,16 @@ define([
     }
 
     return function () {
-        topic.subscribe("/epi/shell/context/request", onShowProjectOverview);
+        var currentContextUri;
+
+        topic.subscribe("/epi/shell/context/request", function (args) {
+            var newContextUri = args.uri;
+            if (newContextUri && newContextUri.indexOf("epi.cms.project:///") !== -1 && newContextUri !== currentContextUri) {
+                tracker.trackEvent("project_overview");
+            }
+
+            currentContextUri = newContextUri;
+        });
 
         patchAddProjectCommand();
 
