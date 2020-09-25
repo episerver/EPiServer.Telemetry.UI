@@ -16,6 +16,9 @@ describe("#TrackerFactory", () => {
             cmsTracker.trackEvent("bar", {
                 bar: "bar"
             });
+            cmsTracker.trackPageView({
+                foo: "foo"
+            });
         });
 
         test("should not send the event to appInsights", () => {
@@ -35,11 +38,15 @@ describe("#TrackerFactory", () => {
             test("should send the events with concatenated owner and eventName to appInsights in correct order", () => {
                 expect(trackEventSpy).toHaveBeenNthCalledWith(1, "cms_foo", {
                     foo: "foo"
-                });
+                }, undefined);
 
                 expect(trackEventSpy).toHaveBeenNthCalledWith(2, "cms_bar", {
                     bar: "bar"
-                });
+                }, undefined);
+                expect(trackEventSpy).toHaveBeenNthCalledWith(3, "cms_PageView", {
+                    foo: "foo",
+                    refUri: "" // This is added automatically to PageView events
+                }, true);
             });
         })
     });
