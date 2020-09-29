@@ -52,7 +52,6 @@ class Tracker implements ITracker {
         }
 
         const name = this.owner + "_" + eventName;
-        console.log("trackEvent:", name, data);
         this.trackEventCallback(name, data);
     }
 }
