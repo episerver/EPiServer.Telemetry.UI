@@ -30,9 +30,15 @@ export interface ITracker {
      * @param data - Tracked object
      */
     trackEvent(eventName: string, data: object);
+
+    /**
+     * Send a page view tracking event
+     * @param data - Tracked object
+     */
+    trackPageView(data: object);
 }
 
-type TrackEventCallback = (eventName: string, data: object) => void;
+type TrackEventCallback = (eventName: string, data: object, isPageView?: boolean) => void;
 
 /**
  * AppInsights ITracker implementation
@@ -54,6 +60,11 @@ class Tracker implements ITracker {
         const name = this.owner + "_" + eventName;
         console.log("trackEvent:", name, data);
         this.trackEventCallback(name, data);
+    }
+
+    trackPageView(data: object) {
+        const name = this.owner + "_PageView";
+        this.trackEventCallback(name, data, true);
     }
 }
 
@@ -141,24 +152,24 @@ export class TrackerFactory {
             throw new Error("Owner is required to be set before using the tracker. If it's team name then please use the JIRA shorthand e.g cms or com.");
         }
 
-        return new Tracker(owner, (eventName, data) => {
+        return new Tracker(owner, (eventName, data, isPageView) => {
             if (!this.appInsights) {
-                this.queuedEvents.push({ eventName, data });
+                this.queuedEvents.push({ eventName, data, isPageView });
                 return;
             }
 
-            this.send(eventName, data);
+            this.send(eventName, data, isPageView);
         });
     }
 
     private processQueuedEvents() {
         while (this.queuedEvents.length > 0) {
             const nextEvent = this.queuedEvents.shift();
-            this.send(nextEvent.eventName, nextEvent.data);
+            this.send(nextEvent.eventName, nextEvent.data, nextEvent.isPageView);
         }
     }
 
-    private send(eventName, data) {
-        this.appInsights.trackEvent({ name: eventName }, data);
+    private send(eventName, data, isPageView = false) {
+        isPageView ? this.appInsights.trackPageView({ name: eventName, properties: data }) : this.appInsights.trackEvent({ name: eventName }, data);
     }
 }
