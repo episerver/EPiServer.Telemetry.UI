@@ -198,6 +198,28 @@ namespace EPiServer.Telemetry.UI.Tests.Telemetry.Internal
         }
 
         [Fact]
+        public async void Get_WhenProviderDoesNotReturnAnyUser_ShouldReturnNullDate()
+        {
+            _uiUserProviderMock
+                .Setup(provider => provider.GetUser(It.IsAny<string>()))
+                .Returns((IUIUser)null);
+
+            var result = await _telemetryService.Get();
+            Assert.Null(result.User_creationDate);
+        }
+
+        [Fact]
+        public async void Get_WhenProviderThrows_ShouldReturnNullDate()
+        {
+            _uiUserProviderMock
+                .Setup(provider => provider.GetUser(It.IsAny<string>()))
+                .Throws(new Exception("there is no user with that name"));
+
+            var result = await _telemetryService.Get();
+            Assert.Null(result.User_creationDate);
+        }
+
+        [Fact]
         public async void GetConfiguration_ShouldBeCalledWithClientParameter()
         {
             _telemetryService.GetRequestAsync = url =>
