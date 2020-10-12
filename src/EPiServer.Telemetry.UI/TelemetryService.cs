@@ -47,13 +47,12 @@ namespace EPiServer.Telemetry.UI
                 return TelemetryConfigModel.Disabled;
             }
 
-            var user = _uiUserProvider.GetUser(_principalAccessor.CurrentName());
             var telemetryConfigModel = new TelemetryConfigModel
             {
                 Client = GetClientHash(),
                 User = GetUserHash(),
                 Versions = GetVersions(),
-                User_creationDate = user?.CreationDate,
+                User_creationDate = GetDate(),
                 User_hasAdminAccess = PrincipalInfo.HasAdminAccess
             };
 
@@ -90,6 +89,21 @@ namespace EPiServer.Telemetry.UI
         private Dictionary<string, string> GetVersions()
         {
             return _moduleTable.GetModules().ToDictionary(_ => _.Name, _ => _.ResolveVersion().ToString());
+        }
+
+        private DateTime? GetDate()
+        {
+            IUIUser user = null;
+            try
+            {
+                user = _uiUserProvider.GetUser(_principalAccessor.CurrentName());
+            }
+            catch
+            {
+                // We swallow all exceptions because the implementation
+                // of _uiUserProvider might throw but that doesnt matter here
+            }
+            return user?.CreationDate;
         }
 
         /// <summary>
