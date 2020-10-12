@@ -19,8 +19,10 @@ if (!$assemblyVersion) {
 }
 
 switch -wildcard ($branchName) {
-    "master"   { $preReleaseInfo = "" }
-    default    { $preReleaseInfo = "-pre-{0:D6}" }
+    "master" { $preReleaseInfo = "" }
+    "develop" { $preReleaseInfo = "-inte-{0:D6}" }
+    "release/*" { $preReleaseInfo = "-pre-{0:D6}" }
+    default { $preReleaseInfo = "-developerbuild-{0:D6}" }
 }
 
 $informationalVersion  = "$assemblyVersion$preReleaseInfo" -f $buildCounter
