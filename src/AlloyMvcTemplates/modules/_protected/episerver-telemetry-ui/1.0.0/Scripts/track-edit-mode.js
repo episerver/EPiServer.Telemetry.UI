@@ -5,6 +5,7 @@ define([
     "epi-cms/contentediting/ContentViewModel",
     "epi-cms/contentediting/PageDataController",
     "episerver-telemetry-ui/idle-timer",
+    "episerver-telemetry-ui/track-quick-edit",
     "episerver-telemetry-ui/tracker"
 ], function (
     topic,
@@ -13,6 +14,7 @@ define([
     ContentViewModel,
     PageDataController,
     idleTimer,
+    trackQuickEdit,
     tracker
 ) {
     return function () {
@@ -25,7 +27,8 @@ define([
             if (idleTimer.isActive() && viewName) {
                 tracker.trackEvent("edit_time", {
                     editMode: viewName,
-                    commandType: commandType || "heartbeat"
+                    commandType: commandType || "heartbeat",
+                    isQuickEdit: trackQuickEdit.isQuickEdit()
                 });
             }
 
@@ -40,7 +43,8 @@ define([
 
             tracker.trackEvent("edit_contentSaved", {
                 editMode: viewName,
-                contentType: contentType
+                contentType: contentType,
+                isQuickEdit: trackQuickEdit.isQuickEdit()
             });
         }
 

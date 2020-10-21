@@ -10,6 +10,7 @@ define([
     "episerver-telemetry-ui/track-edit-mode",
     "episerver-telemetry-ui/track-projects",
     "episerver-telemetry-ui/track-creation",
+    "episerver-telemetry-ui/track-quick-edit",
     "episerver-telemetry-ui/tracker"
 ], function (
     declare,
@@ -23,6 +24,7 @@ define([
     trackEditMode,
     trackProjects,
     trackCreation,
+    trackQuickEdit,
     tracker
 ) {
     return declare([_Module], {
@@ -48,6 +50,7 @@ define([
                     }
                     tracker.trackEvent("loaded");
                     trackCreation();
+                    trackQuickEdit.initialize();
                     trackEditMode();
                     trackProjects();
                 }).always(function () {
