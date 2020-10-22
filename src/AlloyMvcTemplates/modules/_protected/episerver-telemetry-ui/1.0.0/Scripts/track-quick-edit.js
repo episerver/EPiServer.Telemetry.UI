@@ -1,8 +1,10 @@
 define([
     "epi-cms/contentediting/command/BlockInlineEdit",
+    "epi-cms/contentediting/command/BlockEdit",
     "episerver-telemetry-ui/tracker"
 ], function (
     BlockInlineEditCommand,
+    BlockEditCommand,
     tracker
 ) {
     var isDialogOpen = false;
@@ -39,9 +41,27 @@ define([
         BlockInlineEditCommand.prototype.execute.nom = "execute";
     }
 
+    function patchBlockEditCommand() {
+        // _execute
+        var original_Execute = BlockEditCommand.prototype._execute;
+        BlockEditCommand.prototype._execute = function () {
+
+            original_Execute.apply(this, arguments);
+
+            var isPage = this.model.content.capabilities.isPage;
+            var isBlock = this.model.content.capabilities.isBlock;
+            var contentType = isPage ? "page" : isBlock ? "block" : "";
+            tracker.trackEvent("edit_openClassicEdit", {
+                contentType: contentType
+            });
+        };
+        BlockEditCommand.prototype._execute.nom = "_execute";
+    }
+
     return {
         initialize: function () {
             patchBlockInlineEditCommand();
+            patchBlockEditCommand();
         },
 
         isQuickEdit: function () {
