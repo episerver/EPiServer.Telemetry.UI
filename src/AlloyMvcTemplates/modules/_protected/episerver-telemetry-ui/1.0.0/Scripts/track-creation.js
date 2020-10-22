@@ -27,6 +27,18 @@ define([
         });
     }
 
+    function trackOpenCreate() {
+        var isPage = (this.contentType || entry.creatingTypeIdentifier) === "episerver.core.pagedata";
+        var isBlock = (this.contentType || entry.creatingTypeIdentifier) === "episerver.core.blockdata";
+        if (!isPage && !isBlock) {
+            return;
+        }
+        tracker.trackEvent("edit_openCreateContent", {
+            contentType: isPage ? "page" : "block",
+            entryPoint: entry.entryPoint
+        });
+    }
+
     // Add tracker for creation
     function patchCreateContentViewModel() {
         // _saveSuccessHandler
@@ -51,7 +63,8 @@ define([
         // _execute
         var originalExecute = NewContentCommand.prototype._execute;
         NewContentCommand.prototype._execute = function () {
-            entry.entryPoint = this.category === "context" ? "treeContext" : "gadgetIcon";
+            entry.entryPoint = this.category === "context" ? "contentMenu" : "gadgetIcon";
+            trackOpenCreate.call(this);
             originalExecute.apply(this, arguments);
         };
         NewContentCommand.prototype._execute.nom = "_execute";
@@ -65,12 +78,13 @@ define([
             if (this.settings && this.settings.model) {
                 // Toolbar
                 entry.entryPoint = "toolbar";
+                entry.creatingTypeIdentifier = this.creatingTypeIdentifier;
             } else if (this.creatingTypeIdentifier) {
                 // ContentArea
                 entry.entryPoint = "contentArea";
                 entry.creatingTypeIdentifier = this.creatingTypeIdentifier;
             }
-
+            trackOpenCreate.call(this);
             originalExecute.apply(this, arguments);
         };
         CreateContentFromSelectorCommand.prototype._execute.nom = "_execute";
