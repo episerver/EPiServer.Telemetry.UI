@@ -9,10 +9,10 @@ define([
 
     function patchBlockInlineEditCommand() {
         // _execute
-        var originalExecute = BlockInlineEditCommand.prototype._execute;
+        var original_Execute = BlockInlineEditCommand.prototype._execute;
         BlockInlineEditCommand.prototype._execute = function () {
 
-            originalExecute.apply(this, arguments);
+            original_Execute.apply(this, arguments);
 
             if (this._dialog) {
                 isDialogOpen = true;
@@ -22,10 +22,24 @@ define([
             }
         };
         BlockInlineEditCommand.prototype._execute.nom = "_execute";
+
+        // execute
+        var originalExecute = BlockInlineEditCommand.prototype.execute;
+        BlockInlineEditCommand.prototype.execute = function (event) {
+
+            originalExecute && originalExecute.apply(this, arguments);
+
+            if (this.isAvailable && this.canExecute) {
+                var entryPoint = event && event.type === "click" ? "click" : "doubleClick";
+                tracker.trackEvent("edit_openQuickEdit", {
+                    entryPoint: entryPoint
+                });
+            }
+        };
+        BlockInlineEditCommand.prototype.execute.nom = "execute";
     }
 
     return {
-
         initialize: function () {
             patchBlockInlineEditCommand();
         },
