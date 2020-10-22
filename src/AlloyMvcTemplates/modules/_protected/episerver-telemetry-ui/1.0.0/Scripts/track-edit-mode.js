@@ -2,7 +2,7 @@ define([
     "dojo/topic",
     "dojo/when",
     "epi/dependency",
-    "epi-cms/contentediting/ContentModelServerSync",
+    "epi-cms/contentediting/ContentViewModel",
     "epi-cms/contentediting/PageDataController",
     "episerver-telemetry-ui/idle-timer",
     "episerver-telemetry-ui/tracker"
@@ -10,7 +10,7 @@ define([
     topic,
     when,
     dependency,
-    ContentModelServerSync,
+    ContentViewModel,
     PageDataController,
     idleTimer,
     tracker
@@ -33,9 +33,14 @@ define([
             heartbeatTimeoutId = setTimeout(trackHeartbeat, heartbeatInterval * 1000);
         }
 
-        function trackContentSaved() {
+        function trackContentSaved(model) {
+            var isPage = model.contentData.capabilities.isPage;
+            var isBlock = model.contentData.capabilities.isBlock;
+            var contentType = isPage ? "page" : isBlock ? "block" : "";
+
             tracker.trackEvent("edit_contentSaved", {
-                editMode: viewName
+                editMode: viewName,
+                contentType: contentType
             });
         }
 
@@ -56,13 +61,13 @@ define([
             PageDataController.prototype._iFrameLoaded.nom = "_iFrameLoaded";
         }
 
-        function patchContentModelServerSync() {
-            var originalPublishContentSavedMessage = ContentModelServerSync.prototype._publishContentSavedMessage;
-            ContentModelServerSync.prototype._publishContentSavedMessage = function (result) {
-                trackContentSaved();
-                originalPublishContentSavedMessage.apply(this, arguments);
+        function patchContentViewModel() {
+            var originalSave = ContentViewModel.prototype._save;
+            ContentViewModel.prototype._save = function (result) {
+                trackContentSaved(this);
+                return originalSave.apply(this, arguments);
             };
-            ContentModelServerSync.prototype._publishContentSavedMessage.nom = "_publishContentSavedMessage";
+            ContentViewModel.prototype._save.nom = "_save";
         }
 
         function onViewChanged(type, args, data) {
@@ -74,7 +79,7 @@ define([
             trackHeartbeat("changeView");
         }
 
-        patchContentModelServerSync();
+        patchContentViewModel();
 
         // Triggered when changing view component, including Editing/Preview/Compare/ProjectView/ApprovalConfig, etc.
         // However it's not triggered by editMode switchButton.
