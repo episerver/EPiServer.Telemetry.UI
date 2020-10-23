@@ -32,7 +32,7 @@ define([
             originalRemoveProject.apply(this, arguments);
             tracker.trackEvent("project_deleted");
         };
-        ProjectModeToolbarViewModel.prototype.execute.nom = "removeProject";
+        ProjectModeToolbarViewModel.prototype.removeProject.nom = "removeProject";
     }
 
     function patchProjectSelector() {
