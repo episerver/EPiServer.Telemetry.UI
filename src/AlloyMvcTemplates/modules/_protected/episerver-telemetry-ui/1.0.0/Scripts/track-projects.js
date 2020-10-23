@@ -1,22 +1,29 @@
 define([
     "dojo/topic",
+    "epi/dependency",
     "epi/epi",
     "epi-cms/project/command/AddProject",
     "epi-cms/project/viewmodels/ProjectModeToolbarViewModel",
     "epi-cms/project/ProjectSelector",
     "epi-cms/project/ProjectSelectorList",
     "epi-cms/project/ProjectNotification",
+    "epi-cms/project/ProjectService",
     "episerver-telemetry-ui/tracker"
 ], function (
     topic,
+    dependency,
     epi,
     AddProject,
     ProjectModeToolbarViewModel,
     ProjectSelector,
     ProjectSelectorList,
     ProjectNotification,
+    ProjectService,
     tracker
 ) {
+
+    var isProjectSelected;
+
     function patchAddProjectCommand() {
         var originalOnDialogExecute = AddProject.prototype.onDialogExecute;
         AddProject.prototype.onDialogExecute = function () {
@@ -83,26 +90,57 @@ define([
         ProjectNotification.prototype._attachProjectNameClickEvent.nom = "_attachProjectNameClickEvent";
     }
 
-    return function () {
-        var currentContextUri;
+    function patchProjectService() {
+        var originalSetCurrentProject = ProjectService.prototype.setCurrentProject;
+        ProjectService.prototype.setCurrentProject = function (currentProject) {
+            isProjectSelected = currentProject == null ? false : true;
+            return originalSetCurrentProject.apply(this, arguments);
+        };
+        ProjectService.prototype.setCurrentProject.nom = "setCurrentProject";
+    }
 
-        topic.subscribe("/epi/shell/context/request", function (args) {
-            var newContextUri = args.uri;
-            if (newContextUri && newContextUri.indexOf("epi.cms.project:///") !== -1 && newContextUri !== currentContextUri) {
-                tracker.trackEvent("project_overview");
-            }
+    function updateProjectStatus() {
+        var serviceId = "epi.cms.ProjectService";
+        if (dependency.exists(serviceId)) {
+            var projectService = dependency.resolve(serviceId);
+            projectService.getCurrentProjectId().then(function (projectId) {
+                isProjectSelected = projectId == null ? false : true;
+            });
+        } else {
+            isProjectSelected = false;
+        }
+    }
 
-            currentContextUri = newContextUri;
-        });
+    return {
+        isProjectSelected: function () {
+            return isProjectSelected;
+        },
 
-        patchAddProjectCommand();
+        initialize: function () {
+            var currentContextUri;
 
-        patchRemoveProjectCommand();
+            topic.subscribe("/epi/shell/context/request", function (args) {
+                var newContextUri = args.uri;
+                if (newContextUri && newContextUri.indexOf("epi.cms.project:///") !== -1 && newContextUri !== currentContextUri) {
+                    tracker.trackEvent("project_overview");
+                }
 
-        patchProjectSelector();
+                currentContextUri = newContextUri;
+            });
 
-        patchProjectSelectorList();
+            updateProjectStatus();
 
-        patchProjectNotification();
+            patchProjectService();
+
+            patchAddProjectCommand();
+
+            patchRemoveProjectCommand();
+
+            patchProjectSelector();
+
+            patchProjectSelectorList();
+
+            patchProjectNotification();
+        }
     };
 });

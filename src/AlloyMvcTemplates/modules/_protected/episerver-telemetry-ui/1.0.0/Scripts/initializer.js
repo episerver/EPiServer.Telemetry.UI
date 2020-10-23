@@ -52,7 +52,7 @@ define([
                     trackCreation();
                     trackQuickEdit.initialize();
                     trackEditMode();
-                    trackProjects();
+                    trackProjects.initialize();
                 }).always(function () {
                     def.resolve();
                 });
