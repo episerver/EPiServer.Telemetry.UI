@@ -1,5 +1,6 @@
 define([
     "dojo/topic",
+    "dojo/Deferred",
     "epi/dependency",
     "epi/epi",
     "epi-cms/project/command/AddProject",
@@ -7,10 +8,10 @@ define([
     "epi-cms/project/ProjectSelector",
     "epi-cms/project/ProjectSelectorList",
     "epi-cms/project/ProjectNotification",
-    "epi-cms/project/ProjectService",
     "episerver-telemetry-ui/tracker"
 ], function (
     topic,
+    Deferred,
     dependency,
     epi,
     AddProject,
@@ -18,12 +19,8 @@ define([
     ProjectSelector,
     ProjectSelectorList,
     ProjectNotification,
-    ProjectService,
     tracker
 ) {
-
-    var isProjectSelected;
-
     function patchAddProjectCommand() {
         var originalOnDialogExecute = AddProject.prototype.onDialogExecute;
         AddProject.prototype.onDialogExecute = function () {
@@ -90,30 +87,19 @@ define([
         ProjectNotification.prototype._attachProjectNameClickEvent.nom = "_attachProjectNameClickEvent";
     }
 
-    function patchProjectService() {
-        var originalSetCurrentProject = ProjectService.prototype.setCurrentProject;
-        ProjectService.prototype.setCurrentProject = function (currentProject) {
-            isProjectSelected = currentProject == null ? false : true;
-            return originalSetCurrentProject.apply(this, arguments);
-        };
-        ProjectService.prototype.setCurrentProject.nom = "setCurrentProject";
-    }
-
-    function updateProjectStatus() {
-        var serviceId = "epi.cms.ProjectService";
-        if (dependency.exists(serviceId)) {
-            var projectService = dependency.resolve(serviceId);
-            projectService.getCurrentProjectId().then(function (projectId) {
-                isProjectSelected = projectId == null ? false : true;
-            });
-        } else {
-            isProjectSelected = false;
-        }
-    }
-
     return {
-        isProjectSelected: function () {
-            return isProjectSelected;
+        // Returns a promise object that is resolved with the bool "isProjectSelected"
+        getProjectState: function () {
+            var serviceId = "epi.cms.ProjectService";
+            if (dependency.exists(serviceId)) {
+                var projectService = dependency.resolve(serviceId);
+                return projectService.getCurrentProjectId()
+                    .then(function (projectId) {
+                        return projectId != null;
+                    });
+            } else {
+                return new Deferred(false);
+            }
         },
 
         initialize: function () {
@@ -127,10 +113,6 @@ define([
 
                 currentContextUri = newContextUri;
             });
-
-            updateProjectStatus();
-
-            patchProjectService();
 
             patchAddProjectCommand();
 

@@ -27,11 +27,13 @@ define([
 
         function trackHeartbeat(commandType) {
             if (idleTimer.isActive() && viewName) {
-                tracker.trackEvent("edit_time", {
-                    editMode: viewName,
-                    commandType: commandType || "heartbeat",
-                    isProjectSelected: trackProjects.isProjectSelected(),
-                    isQuickEdit: trackQuickEdit.isQuickEdit()
+                trackProjects.getProjectState().then(function (isProjectSelected) {
+                    tracker.trackEvent("edit_time", {
+                        editMode: viewName,
+                        commandType: commandType || "heartbeat",
+                        isProjectSelected: isProjectSelected,
+                        isQuickEdit: trackQuickEdit.isQuickEdit()
+                    });
                 });
             }
 
@@ -44,11 +46,13 @@ define([
             var isBlock = model.contentData.capabilities.isBlock;
             var contentType = isPage ? "page" : isBlock ? "block" : "";
 
-            tracker.trackEvent("edit_contentSaved", {
-                editMode: viewName,
-                contentType: contentType,
-                isProjectSelected: trackProjects.isProjectSelected(),
-                isQuickEdit: trackQuickEdit.isQuickEdit()
+            trackProjects.getProjectState().then(function (isProjectSelected) {
+                tracker.trackEvent("edit_contentSaved", {
+                    editMode: viewName,
+                    contentType: contentType,
+                    isProjectSelected: isProjectSelected,
+                    isQuickEdit: trackQuickEdit.isQuickEdit()
+                });
             });
         }
 
