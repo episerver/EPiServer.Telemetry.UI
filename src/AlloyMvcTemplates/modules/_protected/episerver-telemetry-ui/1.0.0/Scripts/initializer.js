@@ -50,9 +50,14 @@ define([
                     }
                     tracker.trackEvent("loaded");
                     trackCreation();
-                    trackQuickEdit.initialize();
                     trackEditMode();
                     trackProjects.initialize();
+
+                    // initialize trackQuickEdit if cms version >= 11.30.1
+                    var cmsVersion = telemetry.versions.cms.split(".");
+                    if (cmsVersion[1] > 30 || (cmsVersion[1] === "30" && cmsVersion[2] >= 1)) {
+                        trackQuickEdit.initialize();
+                    }
                 }).always(function () {
                     def.resolve();
                 });
