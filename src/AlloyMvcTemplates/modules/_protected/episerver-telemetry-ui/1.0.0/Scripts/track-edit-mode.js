@@ -19,78 +19,78 @@ define([
     trackProjects,
     tracker
 ) {
-    return function () {
-        var viewName = "";
+    var viewName = "";
 
-        var heartbeatInterval = 60;
-        var heartbeatTimeoutId;
+    var heartbeatInterval = 60;
+    var heartbeatTimeoutId;
 
-        function trackHeartbeat(commandType) {
-            if (idleTimer.isActive() && viewName) {
-                trackProjects.getProjectState().then(function (isProjectSelected) {
-                    tracker.trackEvent("edit_time", {
-                        editMode: viewName,
-                        commandType: commandType || "heartbeat",
-                        isProjectSelected: isProjectSelected,
-                        isQuickEdit: trackQuickEdit.isQuickEdit()
-                    });
-                });
-            }
-
-            clearTimeout(heartbeatTimeoutId);
-            heartbeatTimeoutId = setTimeout(trackHeartbeat, heartbeatInterval * 1000);
-        }
-
-        function trackContentSaved(model) {
-            var isPage = model.contentData.capabilities.isPage;
-            var isBlock = model.contentData.capabilities.isBlock;
-            var contentType = isPage ? "page" : isBlock ? "block" : "";
-
+    function trackHeartbeat(commandType) {
+        if (idleTimer.isActive() && viewName) {
             trackProjects.getProjectState().then(function (isProjectSelected) {
-                tracker.trackEvent("edit_contentSaved", {
+                tracker.trackEvent("edit_time", {
                     editMode: viewName,
-                    contentType: contentType,
+                    commandType: commandType || "heartbeat",
                     isProjectSelected: isProjectSelected,
                     isQuickEdit: trackQuickEdit.isQuickEdit()
                 });
             });
         }
 
-        function bindIframeEvents() {
-            try {
-                idleTimer.bindEvents(window["sitePreview"].document);
-            } catch (e) {
-                // catch error in x-domain scenario
-            }
-        }
+        clearTimeout(heartbeatTimeoutId);
+        heartbeatTimeoutId = setTimeout(trackHeartbeat, heartbeatInterval * 1000);
+    }
 
-        function patchPageDataController() {
-            var originalIFrameLoaded = PageDataController.prototype._iFrameLoaded;
-            PageDataController.prototype._iFrameLoaded = function () {
-                originalIFrameLoaded.apply(this, arguments);
-                bindIframeEvents();
-            };
-            PageDataController.prototype._iFrameLoaded.nom = "_iFrameLoaded";
-        }
+    function trackContentSaved(model) {
+        var isPage = model.contentData.capabilities.isPage;
+        var isBlock = model.contentData.capabilities.isBlock;
+        var contentType = isPage ? "page" : isBlock ? "block" : "";
 
-        function patchContentViewModel() {
-            var originalSave = ContentViewModel.prototype._save;
-            ContentViewModel.prototype._save = function (result) {
-                trackContentSaved(this);
-                return originalSave.apply(this, arguments);
-            };
-            ContentViewModel.prototype._save.nom = "_save";
-        }
+        trackProjects.getProjectState().then(function (isProjectSelected) {
+            tracker.trackEvent("edit_contentSaved", {
+                editMode: viewName,
+                contentType: contentType,
+                isProjectSelected: isProjectSelected,
+                isQuickEdit: trackQuickEdit.isQuickEdit()
+            });
+        });
+    }
 
-        function onViewChanged(type, args, data) {
-            viewName = data.viewName || "";
+    function bindIframeEvents() {
+        try {
+            idleTimer.bindEvents(window["sitePreview"].document);
+        } catch (e) {
+            // catch error in x-domain scenario
         }
+    }
 
-        function onEditModeChanged(data) {
-            viewName = data.viewName || "";
-            trackHeartbeat("changeView");
-        }
+    function patchPageDataController() {
+        var originalIFrameLoaded = PageDataController.prototype._iFrameLoaded;
+        PageDataController.prototype._iFrameLoaded = function () {
+            originalIFrameLoaded.apply(this, arguments);
+            bindIframeEvents();
+        };
+        PageDataController.prototype._iFrameLoaded.nom = "_iFrameLoaded";
+    }
 
+    function patchContentViewModel() {
+        var originalSave = ContentViewModel.prototype._save;
+        ContentViewModel.prototype._save = function (result) {
+            trackContentSaved(this);
+            return originalSave.apply(this, arguments);
+        };
+        ContentViewModel.prototype._save.nom = "_save";
+    }
+
+    function onViewChanged(type, args, data) {
+        viewName = data.viewName || "";
+    }
+
+    function onEditModeChanged(data) {
+        viewName = data.viewName || "";
+        trackHeartbeat("changeView");
+    }
+
+    return function () {
         patchContentViewModel();
 
         // Triggered when changing view component, including Editing/Preview/Compare/ProjectView/ApprovalConfig, etc.
