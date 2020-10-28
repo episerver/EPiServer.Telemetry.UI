@@ -20,6 +20,7 @@ define([
     tracker
 ) {
     var viewName = "";
+    var contentType = "";
 
     var heartbeatInterval = 60;
     var heartbeatTimeoutId;
@@ -29,6 +30,7 @@ define([
             trackProjects.getProjectState().then(function (isProjectSelected) {
                 tracker.trackEvent("edit_time", {
                     editMode: viewName,
+                    contentType: contentType,
                     commandType: commandType || "heartbeat",
                     isProjectSelected: isProjectSelected,
                     isQuickEdit: trackQuickEdit.isQuickEdit()
@@ -70,6 +72,19 @@ define([
             bindIframeEvents();
         };
         PageDataController.prototype._iFrameLoaded.nom = "_iFrameLoaded";
+
+        var originalSetView = PageDataController.prototype._setView;
+        PageDataController.prototype._setView = function () {
+            // update contentType
+            if (this._currentContext && this._currentContext.capabilities) {
+                var isPage = this._currentContext.capabilities.isPage;
+                var isBlock = this._currentContext.capabilities.isBlock;
+                contentType = isPage ? "page" : isBlock ? "block" : "";
+            }
+
+            return originalSetView.apply(this, arguments);
+        };
+        PageDataController.prototype._setView.nom = "_setView";
     }
 
     function patchContentViewModel() {
