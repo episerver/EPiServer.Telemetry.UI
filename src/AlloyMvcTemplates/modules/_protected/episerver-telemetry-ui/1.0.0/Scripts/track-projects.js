@@ -2,6 +2,7 @@ define([
     "dojo/topic",
     "epi/epi",
     "epi-cms/project/command/AddProject",
+    "epi-cms/project/viewmodels/ProjectModeToolbarViewModel",
     "epi-cms/project/ProjectSelector",
     "epi-cms/project/ProjectSelectorList",
     "epi-cms/project/ProjectNotification",
@@ -10,6 +11,7 @@ define([
     topic,
     epi,
     AddProject,
+    ProjectModeToolbarViewModel,
     ProjectSelector,
     ProjectSelectorList,
     ProjectNotification,
@@ -24,10 +26,13 @@ define([
         AddProject.prototype.onDialogExecute.nom = "onDialogExecute";
     }
 
-    function onShowProjectOverview(args) {
-        if (args.uri && args.uri.indexOf("epi.cms.project:///") !== -1) {
-            tracker.trackEvent("project_overview");
-        }
+    function patchRemoveProjectCommand() {
+        var originalRemoveProject = ProjectModeToolbarViewModel.prototype.removeProject;
+        ProjectModeToolbarViewModel.prototype.removeProject = function () {
+            originalRemoveProject.apply(this, arguments);
+            tracker.trackEvent("project_deleted");
+        };
+        ProjectModeToolbarViewModel.prototype.execute.nom = "removeProject";
     }
 
     function patchProjectSelector() {
@@ -79,9 +84,20 @@ define([
     }
 
     return function () {
-        topic.subscribe("/epi/shell/context/request", onShowProjectOverview);
+        var currentContextUri;
+
+        topic.subscribe("/epi/shell/context/request", function (args) {
+            var newContextUri = args.uri;
+            if (newContextUri && newContextUri.indexOf("epi.cms.project:///") !== -1 && newContextUri !== currentContextUri) {
+                tracker.trackEvent("project_overview");
+            }
+
+            currentContextUri = newContextUri;
+        });
 
         patchAddProjectCommand();
+
+        patchRemoveProjectCommand();
 
         patchProjectSelector();
 

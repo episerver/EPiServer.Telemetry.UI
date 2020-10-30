@@ -121,12 +121,12 @@ namespace EPiServer.Telemetry.UI.Tests.Telemetry.Internal
         }
 
         [Fact]
-        public async void GetClientHash_WhenLicenseKey_IsNull_AndLoadLicense_ThrowsLicenseException_ShouldSetClient_AsNull()
+        public async void GetClientHash_WhenLicenseKey_IsNull_AndLoadLicense_ThrowsLicenseException_ShouldSetClient_AsDevelopment()
         {
             _licensingOptions.LicenseKey = null;
             _telemetryService.LoadLicense = (string licenseFilePath) => throw new LicenseException();
             var result = await _telemetryService.Get();
-            Assert.Null(result.Client);
+            Assert.Equal("development", result.Client);
         }
 
         [Fact]
@@ -198,6 +198,28 @@ namespace EPiServer.Telemetry.UI.Tests.Telemetry.Internal
         }
 
         [Fact]
+        public async void Get_WhenProviderDoesNotReturnAnyUser_ShouldReturnNullDate()
+        {
+            _uiUserProviderMock
+                .Setup(provider => provider.GetUser(It.IsAny<string>()))
+                .Returns((IUIUser)null);
+
+            var result = await _telemetryService.Get();
+            Assert.Null(result.User_creationDate);
+        }
+
+        [Fact]
+        public async void Get_WhenProviderThrows_ShouldReturnNullDate()
+        {
+            _uiUserProviderMock
+                .Setup(provider => provider.GetUser(It.IsAny<string>()))
+                .Throws(new Exception("there is no user with that name"));
+
+            var result = await _telemetryService.Get();
+            Assert.Null(result.User_creationDate);
+        }
+
+        [Fact]
         public async void GetConfiguration_ShouldBeCalledWithClientParameter()
         {
             _telemetryService.GetRequestAsync = url =>
@@ -231,13 +253,13 @@ namespace EPiServer.Telemetry.UI.Tests.Telemetry.Internal
         }
 
         [Fact]
-        public async void GetConfiguration_WhenLicenseIsEmpty_ShouldBeCalledWithClientParameter_AsEmpty()
+        public async void GetConfiguration_WhenLicenseIsEmpty_ShouldBeCalledWithClientParameter_AsDevelopment()
         {
             _licensingOptions.LicenseKey = null;
 
             _telemetryService.GetRequestAsync = url =>
             {
-                Assert.Contains("client=&", url);
+                Assert.Contains("client=development&", url);
                 return Task.FromResult(_httpResponseMessage);
             };
             await _telemetryService.Get();
