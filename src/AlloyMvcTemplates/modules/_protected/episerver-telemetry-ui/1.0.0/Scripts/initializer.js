@@ -11,6 +11,7 @@ define([
     "episerver-telemetry-ui/track-projects",
     "episerver-telemetry-ui/track-creation",
     "episerver-telemetry-ui/track-quick-edit",
+    "episerver-telemetry-ui/track-panes",
     "episerver-telemetry-ui/tracker"
 ], function (
     declare,
@@ -25,6 +26,7 @@ define([
     trackProjects,
     trackCreation,
     trackQuickEdit,
+    trackPanes,
     tracker
 ) {
     return declare([_Module], {
@@ -48,6 +50,7 @@ define([
                     if (telemetry.configuration && telemetry.configuration.instrumentationKey) {
                         trackerFactory.initialize(telemetry.configuration, telemetry.user, telemetry.client, commonProperties.initialize(telemetry));
                     }
+                    trackPanes();
                     tracker.trackEvent("loaded");
                     trackCreation();
                     trackEditMode();
