@@ -6,7 +6,7 @@ define([
     "epi/shell/store/JsonRest",
     "epi/_Module",
     "episerver-telemetry-ui/tracker-factory",
-    "episerver-telemetry-ui/get-custom-properties",
+    "episerver-telemetry-ui/common-properties",
     "episerver-telemetry-ui/track-edit-mode",
     "episerver-telemetry-ui/track-projects",
     "episerver-telemetry-ui/track-creation",
@@ -20,7 +20,7 @@ define([
     JsonRest,
     _Module,
     trackerFactory,
-    getCustomProperties,
+    commonProperties,
     trackEditMode,
     trackProjects,
     trackCreation,
@@ -46,7 +46,7 @@ define([
                 .get().then(function (telemetry) {
                     // Prevent errors when initializing tracker without the instrumentationKey
                     if (telemetry.configuration && telemetry.configuration.instrumentationKey) {
-                        trackerFactory.initialize(telemetry.configuration, telemetry.user, telemetry.client, getCustomProperties(telemetry));
+                        trackerFactory.initialize(telemetry.configuration, telemetry.user, telemetry.client, commonProperties.initialize(telemetry));
                     }
                     tracker.trackEvent("loaded");
                     trackCreation();
