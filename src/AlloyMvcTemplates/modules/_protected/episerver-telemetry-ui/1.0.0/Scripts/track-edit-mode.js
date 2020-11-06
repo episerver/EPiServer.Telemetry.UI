@@ -2,79 +2,111 @@ define([
     "dojo/topic",
     "dojo/when",
     "epi/dependency",
-    "epi-cms/contentediting/ContentModelServerSync",
+    "epi-cms/contentediting/ContentViewModel",
     "epi-cms/contentediting/PageDataController",
     "episerver-telemetry-ui/idle-timer",
+    "episerver-telemetry-ui/track-quick-edit",
+    "episerver-telemetry-ui/track-projects",
     "episerver-telemetry-ui/tracker"
 ], function (
     topic,
     when,
     dependency,
-    ContentModelServerSync,
+    ContentViewModel,
     PageDataController,
     idleTimer,
+    trackQuickEdit,
+    trackProjects,
     tracker
 ) {
-    return function () {
-        var viewName = "";
+    var viewName = "";
+    var contentType = "";
 
-        var heartbeatInterval = 60;
-        var heartbeatTimeoutId;
+    var heartbeatInterval = 60;
+    var heartbeatTimeoutId;
 
-        function trackHeartbeat(commandType) {
-            if (idleTimer.isActive() && viewName) {
+    function trackHeartbeat(commandType) {
+        if (idleTimer.isActive() && viewName) {
+            trackProjects.getProjectState().then(function (isProjectSelected) {
                 tracker.trackEvent("edit_time", {
                     editMode: viewName,
-                    commandType: commandType || "heartbeat"
+                    contentType: contentType,
+                    commandType: commandType || "heartbeat",
+                    isProjectSelected: isProjectSelected,
+                    isQuickEdit: trackQuickEdit.isQuickEdit()
                 });
-            }
-
-            clearTimeout(heartbeatTimeoutId);
-            heartbeatTimeoutId = setTimeout(trackHeartbeat, heartbeatInterval * 1000);
-        }
-
-        function trackContentSaved() {
-            tracker.trackEvent("edit_contentSaved", {
-                editMode: viewName
             });
         }
 
-        function bindIframeEvents() {
-            try {
-                idleTimer.bindEvents(window["sitePreview"].document);
-            } catch (e) {
-                // catch error in x-domain scenario
+        clearTimeout(heartbeatTimeoutId);
+        heartbeatTimeoutId = setTimeout(trackHeartbeat, heartbeatInterval * 1000);
+    }
+
+    function trackContentSaved(model) {
+        var isPage = model.contentData.capabilities.isPage;
+        var isBlock = model.contentData.capabilities.isBlock;
+        var contentType = isPage ? "page" : isBlock ? "block" : "";
+
+        trackProjects.getProjectState().then(function (isProjectSelected) {
+            tracker.trackEvent("edit_contentSaved", {
+                editMode: viewName,
+                contentType: contentType,
+                isProjectSelected: isProjectSelected,
+                isQuickEdit: trackQuickEdit.isQuickEdit()
+            });
+        });
+    }
+
+    function bindIframeEvents() {
+        try {
+            idleTimer.bindEvents(window["sitePreview"].document);
+        } catch (e) {
+            // catch error in x-domain scenario
+        }
+    }
+
+    function patchPageDataController() {
+        var originalIFrameLoaded = PageDataController.prototype._iFrameLoaded;
+        PageDataController.prototype._iFrameLoaded = function () {
+            originalIFrameLoaded.apply(this, arguments);
+            bindIframeEvents();
+        };
+        PageDataController.prototype._iFrameLoaded.nom = "_iFrameLoaded";
+
+        var originalSetView = PageDataController.prototype._setView;
+        PageDataController.prototype._setView = function () {
+            // update contentType
+            if (this._currentContext && this._currentContext.capabilities) {
+                var isPage = this._currentContext.capabilities.isPage;
+                var isBlock = this._currentContext.capabilities.isBlock;
+                contentType = isPage ? "page" : isBlock ? "block" : "";
             }
-        }
 
-        function patchPageDataController() {
-            var originalIFrameLoaded = PageDataController.prototype._iFrameLoaded;
-            PageDataController.prototype._iFrameLoaded = function () {
-                originalIFrameLoaded.apply(this, arguments);
-                bindIframeEvents();
-            };
-            PageDataController.prototype._iFrameLoaded.nom = "_iFrameLoaded";
-        }
+            return originalSetView.apply(this, arguments);
+        };
+        PageDataController.prototype._setView.nom = "_setView";
+    }
 
-        function patchContentModelServerSync() {
-            var originalPublishContentSavedMessage = ContentModelServerSync.prototype._publishContentSavedMessage;
-            ContentModelServerSync.prototype._publishContentSavedMessage = function (result) {
-                trackContentSaved();
-                originalPublishContentSavedMessage.apply(this, arguments);
-            };
-            ContentModelServerSync.prototype._publishContentSavedMessage.nom = "_publishContentSavedMessage";
-        }
+    function patchContentViewModel() {
+        var originalSave = ContentViewModel.prototype._save;
+        ContentViewModel.prototype._save = function (result) {
+            trackContentSaved(this);
+            return originalSave.apply(this, arguments);
+        };
+        ContentViewModel.prototype._save.nom = "_save";
+    }
 
-        function onViewChanged(type, args, data) {
-            viewName = data.viewName || "";
-        }
+    function onViewChanged(type, args, data) {
+        viewName = data.viewName || "";
+    }
 
-        function onEditModeChanged(data) {
-            viewName = data.viewName || "";
-            trackHeartbeat("changeView");
-        }
+    function onEditModeChanged(data) {
+        viewName = data.viewName || "";
+        trackHeartbeat("changeView");
+    }
 
-        patchContentModelServerSync();
+    return function () {
+        patchContentViewModel();
 
         // Triggered when changing view component, including Editing/Preview/Compare/ProjectView/ApprovalConfig, etc.
         // However it's not triggered by editMode switchButton.

@@ -6,9 +6,12 @@ define([
     "epi/shell/store/JsonRest",
     "epi/_Module",
     "episerver-telemetry-ui/tracker-factory",
-    "episerver-telemetry-ui/get-custom-properties",
+    "episerver-telemetry-ui/common-properties",
     "episerver-telemetry-ui/track-edit-mode",
     "episerver-telemetry-ui/track-projects",
+    "episerver-telemetry-ui/track-creation",
+    "episerver-telemetry-ui/track-quick-edit",
+    "episerver-telemetry-ui/track-panes",
     "episerver-telemetry-ui/tracker"
 ], function (
     declare,
@@ -18,9 +21,12 @@ define([
     JsonRest,
     _Module,
     trackerFactory,
-    getCustomProperties,
+    commonProperties,
     trackEditMode,
     trackProjects,
+    trackCreation,
+    trackQuickEdit,
+    trackPanes,
     tracker
 ) {
     return declare([_Module], {
@@ -42,11 +48,19 @@ define([
                 .get().then(function (telemetry) {
                     // Prevent errors when initializing tracker without the instrumentationKey
                     if (telemetry.configuration && telemetry.configuration.instrumentationKey) {
-                        trackerFactory.initialize(telemetry.configuration, telemetry.user, telemetry.client, getCustomProperties(telemetry));
+                        trackerFactory.initialize(telemetry.configuration, telemetry.user, telemetry.client, commonProperties.initialize(telemetry));
                     }
+                    trackPanes();
                     tracker.trackEvent("loaded");
+                    trackCreation();
                     trackEditMode();
-                    trackProjects();
+                    trackProjects.initialize();
+
+                    // initialize trackQuickEdit if cms version >= 11.30.1
+                    var cmsVersion = telemetry.versions.cms.split(".");
+                    if (cmsVersion[1] > 30 || (cmsVersion[1] === "30" && cmsVersion[2] >= 1)) {
+                        trackQuickEdit.initialize();
+                    }
                 }).always(function () {
                     def.resolve();
                 });

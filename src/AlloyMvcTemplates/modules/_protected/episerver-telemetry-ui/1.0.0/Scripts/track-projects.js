@@ -1,5 +1,7 @@
 define([
     "dojo/topic",
+    "dojo/Deferred",
+    "epi/dependency",
     "epi/epi",
     "epi-cms/project/command/AddProject",
     "epi-cms/project/viewmodels/ProjectModeToolbarViewModel",
@@ -9,6 +11,8 @@ define([
     "episerver-telemetry-ui/tracker"
 ], function (
     topic,
+    Deferred,
+    dependency,
     epi,
     AddProject,
     ProjectModeToolbarViewModel,
@@ -32,7 +36,7 @@ define([
             originalRemoveProject.apply(this, arguments);
             tracker.trackEvent("project_deleted");
         };
-        ProjectModeToolbarViewModel.prototype.execute.nom = "removeProject";
+        ProjectModeToolbarViewModel.prototype.removeProject.nom = "removeProject";
     }
 
     function patchProjectSelector() {
@@ -83,26 +87,42 @@ define([
         ProjectNotification.prototype._attachProjectNameClickEvent.nom = "_attachProjectNameClickEvent";
     }
 
-    return function () {
-        var currentContextUri;
-
-        topic.subscribe("/epi/shell/context/request", function (args) {
-            var newContextUri = args.uri;
-            if (newContextUri && newContextUri.indexOf("epi.cms.project:///") !== -1 && newContextUri !== currentContextUri) {
-                tracker.trackEvent("project_overview");
+    return {
+        // Returns a promise object that is resolved with the bool "isProjectSelected"
+        getProjectState: function () {
+            var serviceId = "epi.cms.ProjectService";
+            if (dependency.exists(serviceId)) {
+                var projectService = dependency.resolve(serviceId);
+                return projectService.getCurrentProjectId()
+                    .then(function (projectId) {
+                        return projectId != null;
+                    });
+            } else {
+                return new Deferred(false);
             }
+        },
 
-            currentContextUri = newContextUri;
-        });
+        initialize: function () {
+            var currentContextUri;
 
-        patchAddProjectCommand();
+            topic.subscribe("/epi/shell/context/request", function (args) {
+                var newContextUri = args.uri;
+                if (newContextUri && newContextUri.indexOf("epi.cms.project:///") !== -1 && newContextUri !== currentContextUri) {
+                    tracker.trackEvent("project_overview");
+                }
 
-        patchRemoveProjectCommand();
+                currentContextUri = newContextUri;
+            });
 
-        patchProjectSelector();
+            patchAddProjectCommand();
 
-        patchProjectSelectorList();
+            patchRemoveProjectCommand();
 
-        patchProjectNotification();
+            patchProjectSelector();
+
+            patchProjectSelectorList();
+
+            patchProjectNotification();
+        }
     };
 });
