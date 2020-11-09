@@ -63,7 +63,7 @@ define([
         // _execute
         var originalExecute = NewContentCommand.prototype._execute;
         NewContentCommand.prototype._execute = function () {
-            entry.entryPoint = this.category === "context" ? "contentMenu" : "gadgetIcon";
+            entry.entryPoint = this.category === "context" ? "contextMenu" : "gadgetIcon";
             trackOpenCreate.call(this);
             originalExecute.apply(this, arguments);
         };
