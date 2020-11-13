@@ -33,9 +33,10 @@ export interface ITracker {
 
     /**
      * Send a page view tracking event
+     * @param pageName - Name of the page to be tracked
      * @param data - Tracked object
      */
-    trackPageView(data: object);
+    trackPageView(pageName: string, data: object);
 }
 
 type TrackEventCallback = (eventName: string, data: object, isPageView?: boolean) => void;
@@ -61,8 +62,8 @@ class Tracker implements ITracker {
         this.trackEventCallback(name, data);
     }
 
-    trackPageView(data: object) {
-        const name = this.owner + "_PageView";
+    trackPageView(pageName: string, data: object) {
+        const name = this.owner + "_" + pageName;
         this.trackEventCallback(name, data, true);
     }
 }

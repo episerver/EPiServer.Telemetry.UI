@@ -16,7 +16,7 @@ describe("#TrackerFactory", () => {
             cmsTracker.trackEvent("bar", {
                 bar: "bar"
             });
-            cmsTracker.trackPageView({
+            cmsTracker.trackPageView("bar", {
                 foo: "foo"
             });
         });
@@ -43,7 +43,7 @@ describe("#TrackerFactory", () => {
                 expect(trackEventSpy).toHaveBeenNthCalledWith(2, "cms_bar", {
                     bar: "bar"
                 }, undefined);
-                expect(trackEventSpy).toHaveBeenNthCalledWith(3, "cms_PageView", {
+                expect(trackEventSpy).toHaveBeenNthCalledWith(3, "cms_bar", {
                     foo: "foo",
                     refUri: "" // This is added automatically to PageView events
                 }, true);
