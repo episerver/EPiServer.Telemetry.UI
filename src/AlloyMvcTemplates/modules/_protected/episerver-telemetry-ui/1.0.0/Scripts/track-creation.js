@@ -19,10 +19,11 @@ define([
             return;
         }
 
+        var isLocalAssetFolder = this.parent && this.parent.typeIdentifier === "episerver.core.contentassetfolder";
         tracker.trackEvent("edit_contentCreated", {
             contentType: isPage ? "page" : "block",
             entryPoint: entry.entryPoint,
-            isLocalAsset: this.createAsLocalAsset,
+            isLocalAsset: this.createAsLocalAsset || isLocalAssetFolder,
             isSuccess: isSuccess
         });
     }
