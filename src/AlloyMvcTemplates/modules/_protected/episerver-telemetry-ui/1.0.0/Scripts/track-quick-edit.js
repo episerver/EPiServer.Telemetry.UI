@@ -1,8 +1,10 @@
 define([
     "epi-cms/contentediting/command/BlockEdit",
+    "epi-cms/asset/command/ChangeContextToSelection",
     "episerver-telemetry-ui/tracker"
 ], function (
     BlockEditCommand,
+    ChangeContextToSelectionCommand,
     tracker
 ) {
     var isDialogOpen = false;
@@ -41,6 +43,17 @@ define([
         });
     }
 
+    function getContentType(capabilities) {
+        // Calc content type from capabilities.
+        // Returns "page", "block" or an empty string for other types.
+
+        var isPage = capabilities && capabilities.isPage;
+        var isBlock = capabilities && capabilities.isBlock;
+        var contentType = isPage ? "page" : isBlock ? "block" : "";
+
+        return contentType;
+    }
+
     function patchBlockEditCommand() {
         // _execute
         var original_Execute = BlockEditCommand.prototype._execute;
@@ -48,20 +61,33 @@ define([
 
             original_Execute.apply(this, arguments);
 
-            var isPage = this.model.content.capabilities.isPage;
-            var isBlock = this.model.content.capabilities.isBlock;
-            var contentType = isPage ? "page" : isBlock ? "block" : "";
             tracker.trackEvent("edit_openClassicEdit", {
-                contentType: contentType
+                contentType: getContentType(this.model.content.capabilities)
             });
         };
         BlockEditCommand.prototype._execute.nom = "_execute";
+    }
+
+    function patchChangeContextToSelectionCommand() {
+        // _execute
+        var original_Execute = ChangeContextToSelectionCommand.prototype._execute;
+        ChangeContextToSelectionCommand.prototype._execute = function () {
+
+            original_Execute.apply(this, arguments);
+
+            var target = this._getSingleSelectionData();
+            tracker.trackEvent("edit_openClassicEdit", {
+                contentType: getContentType(target.capabilities)
+            });
+        };
+        ChangeContextToSelectionCommand.prototype._execute.nom = "_execute";
     }
 
     return {
         initialize: function () {
             patchBlockInlineEditCommand();
             patchBlockEditCommand();
+            patchChangeContextToSelectionCommand();
         },
 
         isQuickEdit: function () {
