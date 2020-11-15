@@ -1,6 +1,6 @@
 {
-    "name": "@episerver/cms-telemetry",
-    "description": "Telemetry library for Episerver CMS products",
+    "name": "@episerver/telemetry",
+    "description": "Telemetry library for Episerver products",
     "version": "0.1.0",
     "main": "dist/tracker-factory.js",
     "types": "dist/tracker-factory.d.ts",
