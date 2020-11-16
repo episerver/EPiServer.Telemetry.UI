@@ -1,4 +1,5 @@
 define([
+    "dojo/aspect",
     "dojo/when",
     "epi/dependency",
     "epi/epi",
@@ -6,6 +7,7 @@ define([
     "episerver-telemetry-ui/common-properties",
     "episerver-telemetry-ui/tracker"
 ], function (
+    aspect,
     when,
     dependency,
     epi,
@@ -32,61 +34,46 @@ define([
         });
     }
 
-    function trackPinStateChange(pane) {
+    function trackPinStateChange(id, currentState) {
         // summary:
         //      Track sidePanes_changed and update common properties
 
-        when(pane._profile.get(pane.id)).then(function (currentState) {
+        if (!currentState) {
+            return;
+        }
 
-            if (!currentState) {
-                return;
-            }
+        var action;
+        var previousState = savedStates[id];
 
-            var action;
-            var previousState = savedStates[pane.id];
+        // Saved state and update common properties
+        savedStates[id] = currentState;
+        updateCommonProperties();
 
-            // Saved state and update common properties
-            savedStates[pane.id] = currentState;
-            updateCommonProperties();
+        if (!previousState || epi.areEqual(previousState, currentState)) {
+            // Initial load, do not track
+            return;
+        }
 
-            if (!previousState || epi.areEqual(previousState, currentState)) {
-                // Initial load, do not track
-                return;
-            }
+        // Calculate action based on previous state
+        if (previousState.pinned !== currentState.pinned) {
+            action = currentState.pinned ? "pin" : "unpin";
+        } else if (previousState.visible !== currentState.visible) {
+            action = currentState.visible ? "show" : "hide";
+        } else if (previousState.size !== currentState.size) {
+            action = "resize";
+        }
 
-            // Calculate action based on previous state
-            if (previousState.pinned !== currentState.pinned) {
-                action = currentState.pinned ? "pin" : "unpin";
-            } else if (previousState.visible !== currentState.visible) {
-                action = currentState.visible ? "show" : "hide";
-            } else if (previousState.size !== currentState.size) {
-                action = "resize";
-            }
-
-            tracker.trackEvent("sidePanes_changed", {
-                action: action,
-                origin: pane.id
-            });
+        tracker.trackEvent("sidePanes_changed", {
+            action: action,
+            origin: id
         });
     }
 
-    function patchPinnablePane() {
-        var originalPersist = PinnablePane.prototype.persist;
-        PinnablePane.prototype.persist = function () {
-            originalPersist.apply(this, arguments);
-            try {
-                trackPinStateChange(this);
-            } catch (e) {
-                // Ignore errors
-            }
-        };
-        PinnablePane.prototype.persist.nom = "persist";
-    }
-
     return function () {
-        // Update states when initial load
+        var sidePaneIds = ["navigation", "tools"];
         var profile = dependency.resolve("epi.shell.Profile");
-        ["navigation", "tools"].forEach(function (id) {
+        // Update states when initial load
+        sidePaneIds.forEach(function (id) {
             when(profile.get(id), function (currentState) {
                 if (currentState) {
                     savedStates[id] = currentState;
@@ -94,7 +81,11 @@ define([
                 }
             });
         });
-
-        patchPinnablePane();
+        // Attach tracker to profile setter
+        aspect.after(profile, "set", function (id, setting) {
+            if (sidePaneIds.indexOf(id) > -1) {
+                trackPinStateChange(id, setting);
+            }
+        }, true);
     };
 });
