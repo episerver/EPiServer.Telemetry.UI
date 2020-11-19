@@ -13,7 +13,7 @@ CALL yarn --cwd src/episerver-cms-telemetry pack
 IF %errorlevel% NEQ 0 EXIT /B %errorlevel%
 
 ECHO Contents of the tarball:
-FOR /f %%x IN ('dir /b src\episerver-cms-telemetry\episerver-cms-telemetry-v*.tgz') DO SET tarball=%%x
+FOR /f %%x IN ('dir /b src\episerver-cms-telemetry\episerver-telemetry-v*.tgz') DO SET tarball=%%x
 CALL tar -ztvf src/episerver-cms-telemetry/%tarball%
 IF %errorlevel% NEQ 0 EXIT /B %errorlevel%
 
