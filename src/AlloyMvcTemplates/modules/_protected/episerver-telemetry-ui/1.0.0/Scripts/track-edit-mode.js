@@ -26,7 +26,7 @@ define([
     var heartbeatTimeoutId;
 
     function trackHeartbeat(commandType) {
-        if (idleTimer.isActive() && viewName) {
+        if (idleTimer.isActive()) {
             trackProjects.getProjectState().then(function (isProjectSelected) {
                 tracker.trackEvent("edit_time", {
                     editMode: viewName,
@@ -117,6 +117,7 @@ define([
         topic.subscribe("/epi/shell/action/changeview/updatestate", onEditModeChanged);
 
         // The iframe exists, implies that view has been created. In this case, set viewName and start tracking.
+        // Set viewName as saved stickyView. ViewName is empty if no savedView.
         if (window["sitePreview"]) {
             var profile = dependency.resolve("epi.shell.Profile");
             when(profile.get("_savedView")).then(function (savedView) {
