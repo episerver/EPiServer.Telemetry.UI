@@ -25,6 +25,15 @@ define([
     var heartbeatInterval = 60;
     var heartbeatTimeoutId;
 
+    function getContentType(capabilities) {
+        // Calc content type based on capabilities.
+        // Returns "page", "block" or an empty string for other types.
+        var isPage = capabilities && capabilities.isPage;
+        var isBlock = capabilities && capabilities.isBlock;
+
+        return isPage ? "page" : isBlock ? "block" : "";
+    }
+
     function trackHeartbeat(commandType) {
         if (idleTimer.isActive()) {
             trackProjects.getProjectState().then(function (isProjectSelected) {
@@ -43,14 +52,10 @@ define([
     }
 
     function trackContentSaved(model) {
-        var isPage = model.contentData.capabilities.isPage;
-        var isBlock = model.contentData.capabilities.isBlock;
-        var contentType = isPage ? "page" : isBlock ? "block" : "";
-
         trackProjects.getProjectState().then(function (isProjectSelected) {
             tracker.trackEvent("edit_contentSaved", {
                 editMode: viewName,
-                contentType: contentType,
+                contentType: getContentType(model.contentData.capabilities),
                 isProjectSelected: isProjectSelected,
                 isQuickEdit: trackQuickEdit.isQuickEdit()
             });
@@ -76,10 +81,8 @@ define([
         var originalSetView = PageDataController.prototype._setView;
         PageDataController.prototype._setView = function () {
             // update contentType
-            if (this._currentContext && this._currentContext.capabilities) {
-                var isPage = this._currentContext.capabilities.isPage;
-                var isBlock = this._currentContext.capabilities.isBlock;
-                contentType = isPage ? "page" : isBlock ? "block" : "";
+            if (this._currentContext) {
+                contentType = getContentType(this._currentContext.capabilities);
             }
 
             return originalSetView.apply(this, arguments);
