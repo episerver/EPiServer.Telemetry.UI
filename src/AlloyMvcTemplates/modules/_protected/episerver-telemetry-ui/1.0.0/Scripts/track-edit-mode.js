@@ -2,6 +2,7 @@ define([
     "dojo/topic",
     "dojo/when",
     "epi/dependency",
+    "epi/shell/_ContextMixin",
     "epi-cms/contentediting/ContentViewModel",
     "epi-cms/contentediting/PageDataController",
     "episerver-telemetry-ui/idle-timer",
@@ -12,6 +13,7 @@ define([
     topic,
     when,
     dependency,
+    _ContextMixin,
     ContentViewModel,
     PageDataController,
     idleTimer,
@@ -122,6 +124,11 @@ define([
         // The iframe exists, implies that view has been created. In this case, set viewName and start tracking.
         // Set viewName as saved stickyView. ViewName is empty if no savedView.
         if (window["sitePreview"]) {
+            // Creates dummy instance to get the initial context.
+            var dummyContext = new _ContextMixin();
+            if (dummyContext._currentContext) {
+                contentType = getContentType(dummyContext._currentContext.capabilities);
+            }
             var profile = dependency.resolve("epi.shell.Profile");
             when(profile.get("_savedView")).then(function (savedView) {
                 if (savedView) {
