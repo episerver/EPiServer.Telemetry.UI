@@ -2,6 +2,7 @@ define([
     "dojo/topic",
     "dojo/when",
     "epi/dependency",
+    "epi/shell/_ContextMixin",
     "epi-cms/contentediting/ContentViewModel",
     "epi-cms/contentediting/PageDataController",
     "episerver-telemetry-ui/idle-timer",
@@ -12,6 +13,7 @@ define([
     topic,
     when,
     dependency,
+    _ContextMixin,
     ContentViewModel,
     PageDataController,
     idleTimer,
@@ -24,6 +26,15 @@ define([
 
     var heartbeatInterval = 60;
     var heartbeatTimeoutId;
+
+    function getContentType(capabilities) {
+        // Calc content type based on capabilities.
+        // Returns "page", "block" or an empty string for other types.
+        var isPage = capabilities && capabilities.isPage;
+        var isBlock = capabilities && capabilities.isBlock;
+
+        return isPage ? "page" : isBlock ? "block" : "";
+    }
 
     function trackHeartbeat(commandType) {
         if (idleTimer.isActive()) {
@@ -43,14 +54,10 @@ define([
     }
 
     function trackContentSaved(model) {
-        var isPage = model.contentData.capabilities.isPage;
-        var isBlock = model.contentData.capabilities.isBlock;
-        var contentType = isPage ? "page" : isBlock ? "block" : "";
-
         trackProjects.getProjectState().then(function (isProjectSelected) {
             tracker.trackEvent("edit_contentSaved", {
                 editMode: viewName,
-                contentType: contentType,
+                contentType: getContentType(model.contentData.capabilities),
                 isProjectSelected: isProjectSelected,
                 isQuickEdit: trackQuickEdit.isQuickEdit()
             });
@@ -76,10 +83,8 @@ define([
         var originalSetView = PageDataController.prototype._setView;
         PageDataController.prototype._setView = function () {
             // update contentType
-            if (this._currentContext && this._currentContext.capabilities) {
-                var isPage = this._currentContext.capabilities.isPage;
-                var isBlock = this._currentContext.capabilities.isBlock;
-                contentType = isPage ? "page" : isBlock ? "block" : "";
+            if (this._currentContext) {
+                contentType = getContentType(this._currentContext.capabilities);
             }
 
             return originalSetView.apply(this, arguments);
@@ -119,6 +124,11 @@ define([
         // The iframe exists, implies that view has been created. In this case, set viewName and start tracking.
         // Set viewName as saved stickyView. ViewName is empty if no savedView.
         if (window["sitePreview"]) {
+            // Creates dummy instance to get the initial context.
+            var dummyContext = new _ContextMixin();
+            if (dummyContext._currentContext) {
+                contentType = getContentType(dummyContext._currentContext.capabilities);
+            }
             var profile = dependency.resolve("epi.shell.Profile");
             when(profile.get("_savedView")).then(function (savedView) {
                 if (savedView) {
