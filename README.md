@@ -8,7 +8,10 @@ and maybe not pursue when developing new features for CMS and its addons. We ass
 ### CMS add-ons
 
 Episerver Telemetry UI is available as a [Nuget](https://nuget.episerver.com/package/?id=EPiServer.Telemetry.UI) package for CMS add-ons.
-To use it in a project, install the `EPiServer.Telemetry.UI` package:
+
+For projects that are not a CMS add-on you can instead use [the EPiServer.Telemetry.UI.Core nuget package](https://nuget.episerver.com/package/?id=EPiServer.Telemetry.UI.Core). For more details on how to use it in a non add-on project, see the section `Using it as a node module without EPiserver Shell client modules framework` below.
+
+To use it in a CMS add-on project, install the `EPiServer.Telemetry.UI` package:
 
 ```console
 Install-Package EPiServer.Telemetry.UI
@@ -158,6 +161,8 @@ In the example above the event named `preview` will be sent as `capp_preview`.
 
 > **Note: This is in untested preview mode and is not published to npm yet. Use at your on discretion.**
 
+When using Episerver telemetry as a non add-on project you only need a dependency on [the EPiServer.Telemetry.UI.Core nuget package](https://nuget.episerver.com/package/?id=EPiServer.Telemetry.UI.Core).
+
 When dojo initialization module is not available, then the node module has to be used.
 
 Before starting to track events the TrackerFactory has to be initialized with the proper configuration:
@@ -169,7 +174,34 @@ Before starting to track events the TrackerFactory has to be initialized with th
 | accountId           | string                  | true     | Anonymized client ID. A SHA512 hash without salt, using the License key if available and customer name otherwise. |
 | customProperties    | Dictionary<string, any> | false    | List of custom properties that should be included in every tracked event.                                         |
 
-If you're using TypeScript, you can use the `Owner` enum.
+To get the trackerFactory configuration for .NET solutions you can:
+
+* Create your own API controller that uses the `Episerver.Telemetry.UI.TelemetryService`
+
+```csharp
+    public class TelemetryController : ApiController
+    {
+        private readonly TelemetryService _telemetryService;
+
+        public TelemetryController(TelemetryService telemetryService) => _telemetryService = telemetryService;
+
+        [HttpGet]
+        [Route("api/mytelemetryconfig")]
+        public async Task<IHttpActionResult> Get() => Ok(await _telemetryService.Get());
+    }
+```
+
+* Make a request to the API controller from the client
+
+```javascript
+const getConfig = async () => {
+  const url = "api/mytelemetryconfig";
+  const response = await axios.get(url);
+  return response.data;
+};
+```
+
+If you're using TypeScript, you can use the `Owner` enum to set the correct scope.
 
 ```javascript
 // my-changeapproval-react-addon/tracker.ts
@@ -209,11 +241,6 @@ tracker.trackEvent("languageSetting_approved");
 ```
 
 In the example above the event named `languageSetting_approved` will be sent as `capp_languageSetting_approved`.
-
-To get the trackerFactory configuration for .NET solutions you can:
-
-* make a request to the `TelemetryConfigStore`
-* create your own API controller that uses the `Episerver.Telemetry.UI.TelemetryService`
 
 ## Development in this repository
 
