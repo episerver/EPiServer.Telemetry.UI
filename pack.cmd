@@ -9,12 +9,12 @@ REM Tell TeamCity to publish the artifacts even though the entire build isn't do
 ECHO ##teamcity[publishArtifacts '*.nupkg']
 
 REM Create the packaged node module for distribution.
-CALL yarn --cwd src/episerver-cms-telemetry pack
+CALL yarn --cwd src/episerver-telemetry pack
 IF %errorlevel% NEQ 0 EXIT /B %errorlevel%
 
 ECHO Contents of the tarball:
-FOR /f %%x IN ('dir /b src\episerver-cms-telemetry\episerver-telemetry-v*.tgz') DO SET tarball=%%x
-CALL tar -ztvf src/episerver-cms-telemetry/%tarball%
+FOR /f %%x IN ('dir /b src\episerver-telemetry\episerver-telemetry-v*.tgz') DO SET tarball=%%x
+CALL tar -ztvf src/episerver-telemetry/%tarball%
 IF %errorlevel% NEQ 0 EXIT /B %errorlevel%
 
 EXIT /B %ERRORLEVEL%
