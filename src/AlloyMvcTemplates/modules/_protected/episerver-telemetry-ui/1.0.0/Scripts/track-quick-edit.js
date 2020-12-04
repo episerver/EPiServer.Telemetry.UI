@@ -33,7 +33,7 @@ define([
                 originalExecute && originalExecute.apply(this, arguments);
 
                 if (this.isAvailable && this.canExecute) {
-                    var entryPoint = event && event.type === "click" ? "click" : "doubleClick";
+                    var entryPoint = this.category === "context" ? "contextMenu" : "contentArea";
                     tracker.trackEvent("edit_openQuickEdit", {
                         entryPoint: entryPoint
                     });
@@ -62,6 +62,7 @@ define([
             original_Execute.apply(this, arguments);
 
             tracker.trackEvent("edit_openClassicEdit", {
+                entryPoint: this.category === "context" ? "contextMenu" : "contentArea",
                 contentType: getContentType(this.model.content.capabilities)
             });
         };
@@ -77,6 +78,7 @@ define([
 
             var target = this._getSingleSelectionData();
             tracker.trackEvent("edit_openClassicEdit", {
+                entryPoint: this.category === "context" ? "contextMenu" : "contentArea",
                 contentType: getContentType(target.capabilities)
             });
         };
