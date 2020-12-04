@@ -11,6 +11,7 @@ define([
     "episerver-telemetry-ui/track-projects",
     "episerver-telemetry-ui/track-creation",
     "episerver-telemetry-ui/track-quick-edit",
+    "episerver-telemetry-ui/track-inline-main-button",
     "episerver-telemetry-ui/track-panes",
     "episerver-telemetry-ui/tracker"
 ], function (
@@ -26,6 +27,7 @@ define([
     trackProjects,
     trackCreation,
     trackQuickEdit,
+    trackInlineMainButton,
     trackPanes,
     tracker
 ) {
@@ -58,8 +60,9 @@ define([
 
                     // initialize trackQuickEdit if cms version >= 11.32
                     var cmsVersion = telemetry.versions.cms.split(".");
-                    if (cmsVersion[0] > 11 || cmsVersion[1] >= 32) {
+                    if (cmsVersion[0] > 11 || cmsVersion[1] >= 30) {
                         trackQuickEdit.initialize();
+                        trackInlineMainButton.initialize();
                     }
                 }).always(function () {
                     def.resolve();
