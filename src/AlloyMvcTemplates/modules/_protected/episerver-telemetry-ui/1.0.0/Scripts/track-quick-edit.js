@@ -1,8 +1,10 @@
 define([
+    "epi/shell/TypeDescriptorManager",
     "epi-cms/contentediting/command/BlockEdit",
     "epi-cms/asset/command/ChangeContextToSelection",
     "episerver-telemetry-ui/tracker"
 ], function (
+    TypeDescriptorManager,
     BlockEditCommand,
     ChangeContextToSelectionCommand,
     tracker
@@ -54,6 +56,19 @@ define([
         return contentType;
     }
 
+    function getContentTypeFromTypeIdentifier(typeIdentifier) {
+        // Calc content type based on TypeIdentifier.
+        // Returns "page", "block" or an empty string for other types.
+        var contentType = "";
+        if (TypeDescriptorManager.isBaseTypeIdentifier(typeIdentifier, "episerver.core.blockdata")) {
+            contentType = "block";
+        } else if (TypeDescriptorManager.isBaseTypeIdentifier(typeIdentifier, "episerver.core.pagedata")) {
+            contentType = "page";
+        }
+
+        return contentType;
+    }
+
     function patchBlockEditCommand() {
         // _execute
         var original_Execute = BlockEditCommand.prototype._execute;
@@ -63,7 +78,7 @@ define([
 
             tracker.trackEvent("edit_openClassicEdit", {
                 entryPoint: this.category === "context" ? "contextMenu" : "contentArea",
-                contentType: getContentType(this.model.content.capabilities)
+                contentType: getContentTypeFromTypeIdentifier(this.model.typeIdentifier)
             });
         };
         BlockEditCommand.prototype._execute.nom = "_execute";
