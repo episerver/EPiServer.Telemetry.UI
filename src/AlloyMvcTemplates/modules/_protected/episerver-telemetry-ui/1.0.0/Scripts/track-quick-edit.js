@@ -1,8 +1,10 @@
 define([
+    "epi/shell/TypeDescriptorManager",
     "epi-cms/contentediting/command/BlockEdit",
     "epi-cms/asset/command/ChangeContextToSelection",
     "episerver-telemetry-ui/tracker"
 ], function (
+    TypeDescriptorManager,
     BlockEditCommand,
     ChangeContextToSelectionCommand,
     tracker
@@ -33,7 +35,7 @@ define([
                 originalExecute && originalExecute.apply(this, arguments);
 
                 if (this.isAvailable && this.canExecute) {
-                    var entryPoint = event && event.type === "click" ? "click" : "doubleClick";
+                    var entryPoint = this.category === "context" ? "contextMenu" : "contentArea";
                     tracker.trackEvent("edit_openQuickEdit", {
                         entryPoint: entryPoint
                     });
@@ -54,6 +56,19 @@ define([
         return contentType;
     }
 
+    function getContentTypeFromTypeIdentifier(typeIdentifier) {
+        // Calc content type based on TypeIdentifier.
+        // Returns "page", "block" or an empty string for other types.
+        var contentType = "";
+        if (TypeDescriptorManager.isBaseTypeIdentifier(typeIdentifier, "episerver.core.blockdata")) {
+            contentType = "block";
+        } else if (TypeDescriptorManager.isBaseTypeIdentifier(typeIdentifier, "episerver.core.pagedata")) {
+            contentType = "page";
+        }
+
+        return contentType;
+    }
+
     function patchBlockEditCommand() {
         // _execute
         var original_Execute = BlockEditCommand.prototype._execute;
@@ -62,7 +77,8 @@ define([
             original_Execute.apply(this, arguments);
 
             tracker.trackEvent("edit_openClassicEdit", {
-                contentType: getContentType(this.model.content.capabilities)
+                entryPoint: this.category === "context" ? "contextMenu" : "contentArea",
+                contentType: getContentTypeFromTypeIdentifier(this.model.typeIdentifier)
             });
         };
         BlockEditCommand.prototype._execute.nom = "_execute";
@@ -77,6 +93,7 @@ define([
 
             var target = this._getSingleSelectionData();
             tracker.trackEvent("edit_openClassicEdit", {
+                entryPoint: this.category === "context" ? "contextMenu" : "contentArea",
                 contentType: getContentType(target.capabilities)
             });
         };
