@@ -60,7 +60,7 @@ define([
 
                     // initialize trackQuickEdit if cms version >= 11.32
                     var cmsVersion = telemetry.versions.cms.split(".");
-                    if (cmsVersion[0] > 11 || cmsVersion[1] >= 30) {
+                    if (cmsVersion[0] > 11 || cmsVersion[1] >= 32) {
                         trackQuickEdit.initialize();
                         trackInlineMainButton.initialize();
                     }
